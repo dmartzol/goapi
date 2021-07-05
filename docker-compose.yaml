@@ -1,0 +1,91 @@
+version: "3"
+services:
+  dozzle:
+    container_name: dozzle
+    image: amir20/dozzle:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 9999:8080
+
+  database:
+    container_name: postgres
+    image: postgres:13.3
+    restart: on-failure
+    environment:
+      POSTGRES_USER: user-development
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_DB: development
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_volume:/var/lib/postgresql/data
+
+  gateway:
+    container_name: gateway
+    restart: "no"
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        project: gateway
+        project_path: ./cmd/services
+    ports:
+      - 1100:1100
+    command: ./gateway
+    environment:
+      VERBOSE: "true"
+      PGUSER: user-development
+      PGDATABASE: development
+      PGHOST: database
+    depends_on:
+      - database
+    links:
+      - database
+
+  sessions:
+    container_name: sessions
+    restart: "no"
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        project: sessions
+        project_path: ./cmd/services
+    ports:
+      - 1200:1200
+    command: ./sessions
+    environment:
+      VERBOSE: "true"
+      PGUSER: user-development
+      PGDATABASE: development
+      PGHOST: database
+    depends_on:
+      - database
+    links:
+      - database
+
+  accounts:
+    container_name: accounts
+    restart: "no"
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        project: accounts
+        project_path: ./cmd/services
+    ports:
+      - 1300:1300
+    command: ./accounts
+    environment:
+      VERBOSE: "true"
+      PGUSER: user-development
+      PGDATABASE: development
+      PGHOST: database
+    depends_on:
+      - database
+    links:
+      - database
+
+volumes:
+  postgres_volume:
