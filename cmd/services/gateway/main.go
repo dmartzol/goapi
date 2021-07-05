@@ -21,7 +21,7 @@ const (
 
 func main() {
 	log.SetFlags(LstdFlags)
-	db, err := postgres.NewDB()
+	db, err := postgres.NewDBClient()
 	if err != nil {
 		log.Fatalf("error initializing database: %+v", err)
 	}
@@ -29,7 +29,7 @@ func main() {
 	r := mux.NewRouter()
 	apiHandler, err := handler.NewHandler(r, db)
 	if err != nil {
-		log.Fatalf("error starting api: %+v", err)
+		log.Fatalf("error initializing handler: %+v", err)
 	}
 
 	apiHandler.InitializeRoutes()

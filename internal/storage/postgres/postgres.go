@@ -28,7 +28,7 @@ type DatabaseConfig struct {
 	Port                       int
 }
 
-func NewDB() (*DB, error) {
+func NewDBClient() (*DB, error) {
 	dbConfig := DatabaseConfig{}
 	name, ok := os.LookupEnv(dbname)
 	if !ok {
