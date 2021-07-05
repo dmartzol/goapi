@@ -2,12 +2,12 @@ package postgres
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/dmartzol/api-template/pkg/environment"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	"github.com/pkg/errors"
 )
 
 const (
@@ -23,24 +23,24 @@ type DB struct {
 	*sqlx.DB
 }
 
-type DatabaseConfig struct {
+type databaseConfig struct {
 	Name, User, Password, Host string
 	Port                       int
 }
 
 func NewDBClient() (*DB, error) {
-	dbConfig := DatabaseConfig{}
+	dbConfig := databaseConfig{}
 	name, ok := os.LookupEnv(dbname)
 	if !ok {
-		return nil, fmt.Errorf("PGDATABASE environment variable required but not set")
+		return nil, errors.New("PGDATABASE environment variable required but not set")
 	}
 	user, ok := os.LookupEnv(dbuser)
 	if !ok {
-		return nil, fmt.Errorf("PGUSER environment variable required but not set")
+		return nil, errors.New("PGUSER environment variable required but not set")
 	}
 	host, ok := os.LookupEnv(dbhost)
 	if !ok {
-		return nil, fmt.Errorf("PGHOST environment variable required but not set")
+		return nil, errors.New("PGHOST environment variable required but not set")
 	}
 	dbConfig.Port = environment.GetEnvInt(dbport, 5432)
 	dbConfig.Password = environment.GetEnvString(dbpass, "")
@@ -52,13 +52,11 @@ func NewDBClient() (*DB, error) {
 	dataSourceName = fmt.Sprintf(dataSourceName, dbConfig.Host, dbConfig.Port, dbConfig.User, dbConfig.Password, dbConfig.Name)
 	database, err := sqlx.Connect("postgres", dataSourceName)
 	if err != nil {
-		log.Printf("error connecting to db: %+v", err)
-		return nil, err
+		return nil, errors.Wrap(err, "error connecting to database")
 	}
 	err = database.Ping()
 	if err != nil {
-		log.Printf("error pinging db: %+v", err)
-		return nil, err
+		return nil, errors.Wrap(err, "error pinging database")
 	}
 	return &DB{database}, nil
 }
