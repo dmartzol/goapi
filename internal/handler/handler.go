@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
+	"go.uber.org/zap"
 )
 
 const (
@@ -17,22 +18,23 @@ const (
 )
 
 type Handler struct {
+	*zap.SugaredLogger
 	Router *mux.Router
 	db     *postgres.DB
 }
 
-func NewHandler(router *mux.Router, db *postgres.DB) (*Handler, error) {
+func NewHandler(router *mux.Router, db *postgres.DB, logger *zap.SugaredLogger) *Handler {
 	return &Handler{
-		Router: router,
-		db:     db,
-	}, nil
+		SugaredLogger: logger,
+		Router:        router,
+		db:            db,
+	}
 }
 
 func (h *Handler) InitializeRoutes() {
 	h.Router = h.Router.PathPrefix("/v1").Subrouter()
 
 	h.Router.Use(
-		middleware.Logger,
 		middleware.Recoverer,
 		h.AuthMiddleware,
 	)
@@ -47,7 +49,7 @@ func (h *Handler) InitializeRoutes() {
 }
 
 func (h *Handler) Run(addr string) {
-	log.Printf("listening and serving on %s", addr)
+	h.Infof("listening and serving on %s", addr)
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:3000"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},

@@ -6,6 +6,7 @@ import (
 	"github.com/dmartzol/api-template/internal/handler"
 	"github.com/dmartzol/api-template/internal/storage/postgres"
 	"github.com/gorilla/mux"
+	"go.uber.org/zap"
 )
 
 const (
@@ -20,18 +21,20 @@ const (
 )
 
 func main() {
+	l, err := zap.NewProduction()
+	if err != nil {
+		log.Fatalf("error initializing logger: %+v", err)
+	}
+	defer l.Sync()
+	logger := l.Sugar()
+
 	log.SetFlags(LstdFlags)
-	db, err := postgres.NewDBClient()
+	dbClient, err := postgres.NewDBClient()
 	if err != nil {
 		log.Fatalf("error initializing database: %+v", err)
 	}
 
-	r := mux.NewRouter()
-	apiHandler, err := handler.NewHandler(r, db)
-	if err != nil {
-		log.Fatalf("error initializing handler: %+v", err)
-	}
-
+	apiHandler := handler.NewHandler(mux.NewRouter(), dbClient, logger)
 	apiHandler.InitializeRoutes()
 	apiHandler.Run("0.0.0.0:1100")
 }
