@@ -23,17 +23,15 @@ func main() {
 	log.SetFlags(LstdFlags)
 	db, err := postgres.NewDB()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("error initializing database: %+v", err)
 	}
 
 	r := mux.NewRouter()
-	r = r.PathPrefix("/v1").Subrouter()
-
 	apiHandler, err := handler.NewHandler(r, db)
 	if err != nil {
 		log.Fatalf("error starting api: %+v", err)
 	}
 
 	apiHandler.InitializeRoutes()
-	apiHandler.Run("localhost:3001")
+	apiHandler.Run("0.0.0.0:1100")
 }

@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -30,11 +29,14 @@ func NewHandler(router *mux.Router, db *postgres.DB) (*Handler, error) {
 }
 
 func (h *Handler) InitializeRoutes() {
+	h.Router = h.Router.PathPrefix("/v1").Subrouter()
+
 	h.Router.Use(
 		middleware.Logger,
 		middleware.Recoverer,
 		h.AuthMiddleware,
 	)
+
 	h.Router.HandleFunc("/version", h.Version).Methods("GET")
 
 	// sessions
@@ -42,11 +44,10 @@ func (h *Handler) InitializeRoutes() {
 	h.Router.HandleFunc("/sessions", h.CreateSession).Methods("POST")
 	h.Router.HandleFunc("/sessions", h.GetSession).Methods("GET")
 	h.Router.HandleFunc("/sessions", h.ExpireSession).Methods("DELETE")
-
 }
 
 func (h *Handler) Run(addr string) {
-	fmt.Printf("listening and serving on %s", addr)
+	log.Printf("listening and serving on %s", addr)
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:3000"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
