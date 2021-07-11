@@ -22,6 +22,25 @@ func (db *DB) SessionFromToken(token string) (*models.Session, error) {
 }
 
 // CreateSession creates a new session
+func (db *DB) AddSession(session *models.Session) (*models.Session, error) {
+	if err := session.Validate(); err != nil {
+		return nil, err
+	}
+
+	session.Model = models.NewModel()
+
+	var s models.Session
+	sqlInsert := `INSERT INTO SESSIONS (account_id) values ($1)`
+	err := db.Get(&s, sqlInsert, session.AccountID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &s, nil
+}
+
+// CreateSession creates a new session
 func (db *DB) CreateSession(accountID uuid.UUID) (*models.Session, error) {
 	var s models.Session
 	sqlInsert := `insert into sessions (account_id) values ($1) returning *`
