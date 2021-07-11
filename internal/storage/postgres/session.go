@@ -16,7 +16,7 @@ var (
 // SessionFromToken fetches a session by its token
 func (db *DB) SessionFromToken(token string) (*models.Session, error) {
 	var s models.Session
-	sqlStatement := `select * from sessions where token = $1`
+	sqlStatement := `SELECT * FROM sessions WHERE token = $1`
 	err := db.Get(&s, sqlStatement, token)
 	return &s, err
 }
@@ -30,7 +30,7 @@ func (db *DB) AddSession(session *models.Session) (*models.Session, error) {
 	session.Model = models.NewModel()
 
 	var s models.Session
-	sqlInsert := `INSERT INTO SESSIONS (account_id) values ($1)`
+	sqlInsert := `INSERT INTO sessions (account_id) VALUES ($1)`
 	err := db.Get(&s, sqlInsert, session.AccountID)
 
 	if err != nil {
@@ -43,7 +43,7 @@ func (db *DB) AddSession(session *models.Session) (*models.Session, error) {
 // CreateSession creates a new session
 func (db *DB) CreateSession(accountID uuid.UUID) (*models.Session, error) {
 	var s models.Session
-	sqlInsert := `insert into sessions (account_id) values ($1) returning *`
+	sqlInsert := `INSERT INTO sessions (account_id) VALUES ($1) RETURNING *`
 	err := db.Get(&s, sqlInsert, accountID)
 	return &s, err
 }
@@ -51,7 +51,7 @@ func (db *DB) CreateSession(accountID uuid.UUID) (*models.Session, error) {
 // ExpireSessionFromToken expires the session with the given token
 func (db *DB) ExpireSessionFromToken(token string) (*models.Session, error) {
 	var s models.Session
-	sqlStatement := `update sessions set expiration_time = current_timestamp where token = $1 returning *`
+	sqlStatement := `UPDATE sessions SET expiration_time = current_timestamp WHERE token = $1 RETURNING *`
 	err := db.Get(&s, sqlStatement, token)
 	return &s, err
 }
@@ -63,7 +63,7 @@ func (db *DB) UpdateSession(token string) (*models.Session, error) {
 		return nil, err
 	}
 	var session models.Session
-	sqlStatement := `select * from sessions where token = $1`
+	sqlStatement := `SELECT * FROM sessions WHERE token = $1`
 	tx.Get(&session, sqlStatement, token)
 	if err != nil {
 		tx.Rollback()
@@ -73,7 +73,7 @@ func (db *DB) UpdateSession(token string) (*models.Session, error) {
 		return nil, ErrExpiredSession
 	}
 	var updatedSession models.Session
-	sqlStatement = `update sessions set last_activity_time=default where token = $1 returning *`
+	sqlStatement = `UPDATE sessions SET last_activity_time=default WHERE token = $1 RETURNING *`
 	err = tx.Get(&updatedSession, sqlStatement, token)
 	if err != nil {
 		tx.Rollback()
