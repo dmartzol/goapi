@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	ErrExpiredResource error
+	ErrExpiredSession error
 )
 
 // SessionFromToken fetches a session by its token
@@ -51,7 +51,7 @@ func (db *DB) UpdateSession(token string) (*models.Session, error) {
 		return nil, errors.Wrapf(err, "error fetching session from token %s", token)
 	}
 	if session.ExpirationTime.Before(time.Now()) {
-		return nil, ErrExpiredResource
+		return nil, ErrExpiredSession
 	}
 	var updatedSession models.Session
 	sqlStatement = `update sessions set last_activity_time=default where token = $1 returning *`

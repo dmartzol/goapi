@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"log"
 	"net/http"
 
@@ -35,8 +36,8 @@ func (h Handler) AuthMiddleware(next http.Handler) http.Handler {
 				httpresponse.RespondJSONError(w, "", http.StatusUnauthorized)
 				return
 			}
-			if err != postgres.ErrExpiredResource {
-				log.Printf("AuthMiddleware ERROR session %s is expired: %+v", c.Value, err)
+			if errors.Is(err, postgres.ErrExpiredSession) {
+				h.Errorw("expired session", "session", c.Value, "error", err)
 				httpresponse.RespondJSONError(w, "", http.StatusUnauthorized)
 				return
 			}
