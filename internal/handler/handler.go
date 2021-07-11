@@ -17,21 +17,21 @@ const (
 	idQueryParameter = "id"
 )
 
-type Handler struct {
+type handler struct {
 	*zap.SugaredLogger
 	Router *mux.Router
 	db     *postgres.DB
 }
 
-func NewHandler(router *mux.Router, db *postgres.DB, logger *zap.SugaredLogger) *Handler {
-	return &Handler{
+func NewHandler(router *mux.Router, db *postgres.DB, logger *zap.SugaredLogger) *handler {
+	return &handler{
 		SugaredLogger: logger,
 		Router:        router,
 		db:            db,
 	}
 }
 
-func (h *Handler) InitializeRoutes() {
+func (h *handler) InitializeRoutes() {
 	h.Router = h.Router.PathPrefix("/v1").Subrouter()
 
 	h.Router.Use(
@@ -48,7 +48,7 @@ func (h *Handler) InitializeRoutes() {
 	h.Router.HandleFunc("/sessions", h.ExpireSession).Methods("DELETE")
 }
 
-func (h *Handler) Run(addr string) {
+func (h *handler) Run(addr string) {
 	h.Infof("listening and serving on %s", addr)
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:3000"},

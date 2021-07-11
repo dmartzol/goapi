@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func (h *Handler) Version(w http.ResponseWriter, r *http.Request) {
+func (h *handler) Version(w http.ResponseWriter, r *http.Request) {
 	h.Infow("serving service version", "version", apiVersionNumber)
 	fmt.Fprintf(w, "version %s", apiVersionNumber)
 }

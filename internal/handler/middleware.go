@@ -11,7 +11,7 @@ import (
 	"github.com/dmartzol/api-template/pkg/httpresponse"
 )
 
-func (h Handler) AuthMiddleware(next http.Handler) http.Handler {
+func (h *handler) AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		publicRoutes := map[string]string{
 			"/v1/version":  "GET",

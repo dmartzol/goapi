@@ -13,7 +13,7 @@ const (
 	sessionLength = 345600
 )
 
-func (h Handler) GetSession(w http.ResponseWriter, r *http.Request) {
+func (h *handler) GetSession(w http.ResponseWriter, r *http.Request) {
 	c, err := r.Cookie(CookieName)
 	if err != nil {
 		log.Printf("%+v", err)
@@ -29,7 +29,7 @@ func (h Handler) GetSession(w http.ResponseWriter, r *http.Request) {
 	httpresponse.RespondJSON(w, s.View(nil))
 }
 
-func (h Handler) CreateSession(w http.ResponseWriter, r *http.Request) {
+func (h *handler) CreateSession(w http.ResponseWriter, r *http.Request) {
 	var credentials models.LoginCredentials
 	err := httpresponse.Unmarshal(r, &credentials)
 	if err != nil {
@@ -63,7 +63,7 @@ func (h Handler) CreateSession(w http.ResponseWriter, r *http.Request) {
 	httpresponse.RespondJSON(w, s.View(nil))
 }
 
-func (h Handler) ExpireSession(w http.ResponseWriter, r *http.Request) {
+func (h *handler) ExpireSession(w http.ResponseWriter, r *http.Request) {
 	c, err := r.Cookie(CookieName)
 	if err != nil {
 		log.Printf("%+v", err)

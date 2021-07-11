@@ -19,7 +19,7 @@ func main() {
 
 	dbClient, err := postgres.NewDBClient()
 	if err != nil {
-		log.Fatalf("error initializing database: %+v", err)
+		suggaredLogger.Fatalf("error initializing database: %+v", err)
 	}
 
 	apiHandler := handler.NewHandler(mux.NewRouter(), dbClient, suggaredLogger)
