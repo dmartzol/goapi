@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/dmartzol/api-template/internal/storage/postgres"
@@ -57,5 +56,5 @@ func (h *handler) Run(addr string) {
 		// Enable Debugging for testing, consider disabling in production
 		// Debug: true,
 	})
-	log.Fatal(http.ListenAndServe(addr, c.Handler(h.Router)))
+	h.Fatal(http.ListenAndServe(addr, c.Handler(h.Router)))
 }
