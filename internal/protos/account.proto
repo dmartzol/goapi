@@ -1,18 +1,18 @@
 syntax = "proto3";
+package pb;
 
-package protoAccount;
+option go_package = "github.com/dmartzol/api-template/protos/pb";
 import "google/protobuf/timestamp.proto";
-option go_package = "github.com/dmartzol/api-template/internal/protoAccount";
 
 service Accounts {
-    rpc GetAccount (AccountRequest) returns (Account) {}
+    rpc Account (AccountRequest) returns (AccountMessage) {}
 }
 
 message AccountRequest {
     string id = 1;
 }
 
-message Account {
+message AccountMessage {
     string id = 1;
     google.protobuf.Timestamp created_time = 2;
     google.protobuf.Timestamp updated_time = 3;

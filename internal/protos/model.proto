@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package protoModel;
+package pb;
 import "google/protobuf/timestamp.proto";
-option go_package = "github.com/dmartzol/api-template/internal/protoModel";
+option go_package = "github.com/dmartzol/api-template/protos/pb";
 
 
 message Model {

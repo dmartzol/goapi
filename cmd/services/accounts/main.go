@@ -1,10 +1,7 @@
 package main
 
 import (
-	"log"
-
-	"github.com/dmartzol/api-template/internal/handler"
-	"github.com/dmartzol/api-template/internal/proto/protoAccount"
+	pb "github.com/dmartzol/api-template/internal/protos"
 	"github.com/dmartzol/api-template/internal/storage/postgres"
 )
 
@@ -14,9 +11,14 @@ import (
 // }
 
 type accountService struct {
-	protoAccount.UnimplementedAccountsServer
+	pb.UnimplementedAccountsServer
 	*postgres.DB
 }
+
+// func (s *accountService) Account(ctx context.Context, accID *protoTemplate.AccountRequest) (*protoTemplate.AccountMessage, error) {
+// 	a, err := s.DB.AccountWithCredentials("", "")
+// 	return a, err
+// }
 
 // func main() {
 // 	log.Fatal("")
@@ -34,12 +36,16 @@ type accountService struct {
 // }
 
 func main() {
-	dbClient, err := postgres.NewDBClient()
-	if err != nil {
-		log.Fatalf("error initializing database: %+v", err)
-	}
+	// a := template.ThisConst
+	// log.Printf("my constant %s", a)
 
-	apiHandler := handler.NewHandler(dbClient, true)
-	apiHandler.InitializeRoutes()
-	apiHandler.Run("0.0.0.0:1100")
+	// dbClient, err := postgres.NewDBClient()
+	// if err != nil {
+	// 	log.Fatalf("error initializing database: %+v", err)
+	// }
+	// lis, err := net.Listen("tcp", ":50051")
+	// if err != nil {
+	// 	log.Fatalf("failed to listen: %v", err)
+	// }
+	// s := grpc.NewServer()
 }
