@@ -14,21 +14,12 @@ type Accounts []*Account
 // Account represents a user account
 type Account struct {
 	Model
-	FirstName                 string `db:"first_name"`
-	LastName                  string `db:"last_name"`
-	DOB                       time.Time
-	Gender                    *string
-	Active                    bool
-	FailedLoginsCount         int64   `db:"failed_logins_count"`
-	DoorCode                  *string `db:"door_code"`
-	PassHash                  string
-	Email                     string
-	ConfirmedEmail            bool       `db:"confirmed_email"`
-	PhoneNumber               *string    `db:"phone_number"`
-	ConfirmedPhone            bool       `db:"confirmed_phone"`
-	ZipCode                   string     `db:"zip_code"`
-	ReviewTime                *time.Time `db:"review_time"` // timestamp of when the account was reviewed
-	ExternalPaymentCustomerID *int64     `db:"external_payment_customer_id"`
+	FirstName string `db:"first_name"`
+	LastName  string `db:"last_name"`
+	DOB       time.Time
+	Gender    *string
+	PassHash  string
+	Email     string
 }
 
 // AccountView is the restricted response body of Account
@@ -36,35 +27,19 @@ type Account struct {
 type AccountView struct {
 	ID                         uuid.UUID `json:"ID"`
 	FirstName, LastName, Email string
-	DOB                        string `json:"DateOfBird"`
-	PhoneNumber                string `json:",omitempty"`
-	DoorCode                   string `json:",omitempty"`
-	Gender                     string `json:",omitempty"`
-	Active                     bool
-	ConfirmedEmail             bool
-	ConfirmedPhone             bool
-	FailedLoginsCount          int64
+	DOB                        string
+	Gender                     string
 }
 
 // View returns the Account struct restricted to those fields allowed in options
 // see: https://stackoverflow.com/questions/46427723/golang-elegant-way-to-omit-a-json-property-from-being-serialized
 func (a Account) View(options map[string]bool) AccountView {
 	view := AccountView{
-		ID:                a.ID,
-		FirstName:         a.FirstName,
-		LastName:          a.LastName,
-		DOB:               a.DOB.Format(timeutils.LayoutISODay),
-		Active:            a.Active,
-		FailedLoginsCount: a.FailedLoginsCount,
-		Email:             a.Email,
-		ConfirmedEmail:    a.ConfirmedEmail,
-		ConfirmedPhone:    a.ConfirmedPhone,
-	}
-	if a.DoorCode != nil && options["door_code"] {
-		view.DoorCode = *a.DoorCode
-	}
-	if a.PhoneNumber != nil && options["phone_number"] {
-		view.PhoneNumber = *a.PhoneNumber
+		ID:        a.ID,
+		FirstName: a.FirstName,
+		LastName:  a.LastName,
+		DOB:       a.DOB.Format(timeutils.LayoutISODay),
+		Email:     a.Email,
 	}
 	if a.Gender != nil {
 		view.Gender = *a.Gender
