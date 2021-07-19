@@ -13,7 +13,10 @@ func main() {
 		log.Fatalf("error initializing database: %+v", err)
 	}
 
-	apiHandler := handler.NewHandler(dbClient, true)
+	apiHandler, err := handler.NewHandler(dbClient, true)
+	if err != nil {
+		log.Panicf("error creating handler: %v", err)
+	}
 	apiHandler.InitializeRoutes()
 	apiHandler.Run("0.0.0.0:1100")
 }

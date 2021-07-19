@@ -1,12 +1,13 @@
 package handler
 
 import (
-	"log"
 	"net/http"
 
+	"github.com/dmartzol/api-template/internal/mylogger"
 	"github.com/dmartzol/api-template/internal/storage/postgres"
 	"github.com/go-chi/chi/middleware"
 	"github.com/gorilla/mux"
+	"github.com/pkg/errors"
 	"github.com/rs/cors"
 	"go.uber.org/zap"
 )
@@ -23,29 +24,19 @@ type handler struct {
 	db     *postgres.DB
 }
 
-func NewHandler(db *postgres.DB, development bool) *handler {
+func NewHandler(db *postgres.DB, development bool) (*handler, error) {
 	h := handler{
 		Router: mux.NewRouter(),
 		db:     db,
 	}
 
-	var logger *zap.Logger
-	var err error
-	if development {
-		logger, err = zap.NewDevelopment()
-		if err != nil {
-			log.Fatalf("error initializing logger: %+v", err)
-		}
-	} else {
-		logger, err = zap.NewProduction()
-		if err != nil {
-			log.Fatalf("error initializing logger: %+v", err)
-		}
+	logger, err := mylogger.NewLogger(development)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get new logger")
 	}
-	defer logger.Sync()
-	h.SugaredLogger = logger.Sugar()
+	h.SugaredLogger = logger
 
-	return &h
+	return &h, nil
 }
 
 func (h *handler) InitializeRoutes() {
