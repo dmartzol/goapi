@@ -3,11 +3,9 @@ package handler
 import (
 	"net/http"
 
-	"github.com/dmartzol/api-template/internal/mylogger"
 	"github.com/dmartzol/api-template/internal/storage/postgres"
 	"github.com/go-chi/chi/middleware"
 	"github.com/gorilla/mux"
-	"github.com/pkg/errors"
 	"github.com/rs/cors"
 	"go.uber.org/zap"
 )
@@ -18,28 +16,23 @@ const (
 	idQueryParameter = "id"
 )
 
-type handler struct {
+type Handler struct {
 	*zap.SugaredLogger
 	Router *mux.Router
 	db     *postgres.DB
 }
 
-func NewHandler(db *postgres.DB, development bool) (*handler, error) {
-	h := handler{
-		Router: mux.NewRouter(),
-		db:     db,
+func NewHandler(db *postgres.DB, logger *zap.SugaredLogger) (*Handler, error) {
+	h := Handler{
+		Router:        mux.NewRouter(),
+		db:            db,
+		SugaredLogger: logger,
 	}
-
-	logger, err := mylogger.NewLogger(development)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to get new logger")
-	}
-	h.SugaredLogger = logger
 
 	return &h, nil
 }
 
-func (h *handler) InitializeRoutes() {
+func (h *Handler) InitializeRoutes() {
 	h.Router = h.Router.PathPrefix("/v1").Subrouter()
 
 	h.Router.Use(
@@ -56,7 +49,7 @@ func (h *handler) InitializeRoutes() {
 	h.Router.HandleFunc("/sessions", h.ExpireSession).Methods("DELETE")
 }
 
-func (h *handler) Run(addr string) {
+func (h *Handler) Run(addr string) error {
 	h.Infof("listening and serving on %s", addr)
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:3000"},
@@ -65,5 +58,5 @@ func (h *handler) Run(addr string) {
 		// Enable Debugging for testing, consider disabling in production
 		// Debug: true,
 	})
-	h.Fatal(http.ListenAndServe(addr, c.Handler(h.Router)))
+	return http.ListenAndServe(addr, c.Handler(h.Router))
 }

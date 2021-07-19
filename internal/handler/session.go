@@ -12,7 +12,7 @@ const (
 	sessionLength = 345600
 )
 
-func (h *handler) GetSession(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetSession(w http.ResponseWriter, r *http.Request) {
 	c, err := r.Cookie(CookieName)
 	if err != nil {
 		h.Errorw("could not fetch cookie", "cookie", CookieName, "error", err)
@@ -28,7 +28,7 @@ func (h *handler) GetSession(w http.ResponseWriter, r *http.Request) {
 	httpresponse.RespondJSON(w, s.View(nil))
 }
 
-func (h *handler) CreateSession(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) CreateSession(w http.ResponseWriter, r *http.Request) {
 	var credentials models.LoginCredentials
 	err := httpresponse.Unmarshal(r, &credentials)
 	if err != nil {
@@ -62,7 +62,7 @@ func (h *handler) CreateSession(w http.ResponseWriter, r *http.Request) {
 	httpresponse.RespondJSON(w, s.View(nil))
 }
 
-func (h *handler) ExpireSession(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ExpireSession(w http.ResponseWriter, r *http.Request) {
 	c, err := r.Cookie(CookieName)
 	if err != nil {
 		h.Errorw("could not fetch cookie", "cookie", CookieName, "error", err)
