@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	accountservice "github.com/dmartzol/api-template/cmd/services/accounts/service"
 	"github.com/dmartzol/api-template/internal/handler"
 	"github.com/dmartzol/api-template/internal/storage/postgres"
 )
@@ -18,5 +19,6 @@ func main() {
 		log.Panicf("error creating handler: %v", err)
 	}
 	apiHandler.InitializeRoutes()
+	apiHandler.Infof("accounts service running on port %s", accountservice.Port)
 	apiHandler.Run("0.0.0.0:1100")
 }
