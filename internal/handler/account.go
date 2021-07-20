@@ -15,7 +15,7 @@ func (h *Handler) createAccount(w http.ResponseWriter, r *http.Request) {
 	err := httputils.Unmarshal(r, &req)
 	if err != nil {
 		h.Errorw("could not unmarshal", "error", err)
-		httputils.RespondJSONError(w, "", http.StatusInternalServerError)
+		httputils.RespondJSONError(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 	a := pb.CreateAccountMessage{
@@ -24,6 +24,12 @@ func (h *Handler) createAccount(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	h.CreateAccount(ctx, &a)
+	b, err := h.CreateAccount(ctx, &a)
+	if err != nil {
+		h.Errorw("failed to create account", "error", err)
+		httputils.RespondJSONError(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	h.Debugf("b: %v", b)
 	httputils.RespondJSONError(w, http.StatusText(http.StatusNotImplemented), http.StatusNotImplemented)
 }
