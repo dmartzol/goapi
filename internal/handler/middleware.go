@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/dmartzol/api-template/internal/storage/postgres"
-	"github.com/dmartzol/api-template/pkg/httpresponse"
+	"github.com/dmartzol/api-template/pkg/httputils"
 )
 
 func (h *Handler) AuthMiddleware(next http.Handler) http.Handler {
@@ -25,7 +25,7 @@ func (h *Handler) AuthMiddleware(next http.Handler) http.Handler {
 		c, err := r.Cookie(CookieName)
 		if err != nil {
 			h.Errorw("could not fetch cookie", "cookie", CookieName, "error", err)
-			httpresponse.RespondJSONError(w, "", http.StatusUnauthorized)
+			httputils.RespondJSONError(w, "", http.StatusUnauthorized)
 			return
 		}
 		s, err := h.db.UpdateSession(c.Value)
@@ -33,15 +33,15 @@ func (h *Handler) AuthMiddleware(next http.Handler) http.Handler {
 			h.Errorw("could not update session", "token", c.Value, "error", err)
 			if err == sql.ErrNoRows {
 				h.Errorw("unable to find session", "error", err)
-				httpresponse.RespondJSONError(w, "", http.StatusUnauthorized)
+				httputils.RespondJSONError(w, "", http.StatusUnauthorized)
 				return
 			}
 			if errors.Is(err, postgres.ErrExpiredSession) {
 				h.Errorw("expired session", "error", err)
-				httpresponse.RespondJSONError(w, "", http.StatusUnauthorized)
+				httputils.RespondJSONError(w, "", http.StatusUnauthorized)
 				return
 			}
-			httpresponse.RespondJSONError(w, "", http.StatusInternalServerError)
+			httputils.RespondJSONError(w, "", http.StatusInternalServerError)
 			return
 		}
 
