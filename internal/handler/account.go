@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/dmartzol/api-template/internal/api"
-	"github.com/dmartzol/api-template/internal/model"
 	"github.com/dmartzol/api-template/pkg/httputils"
 )
 
@@ -16,6 +15,5 @@ func (h *Handler) CreateAccount(w http.ResponseWriter, r *http.Request) {
 		httputils.RespondJSONError(w, "", http.StatusInternalServerError)
 		return
 	}
-	a := model.Account{}
-	httputils.RespondJSON(w, a.View(nil))
+	httputils.RespondJSONError(w, "Not Implemented", 500)
 }
