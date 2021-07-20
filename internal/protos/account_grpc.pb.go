@@ -18,6 +18,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AccountsClient interface {
+	CreateAccount(ctx context.Context, in *CreateAccountMessage, opts ...grpc.CallOption) (*AccountMessage, error)
 	Account(ctx context.Context, in *AccountRequest, opts ...grpc.CallOption) (*AccountMessage, error)
 }
 
@@ -27,6 +28,15 @@ type accountsClient struct {
 
 func NewAccountsClient(cc grpc.ClientConnInterface) AccountsClient {
 	return &accountsClient{cc}
+}
+
+func (c *accountsClient) CreateAccount(ctx context.Context, in *CreateAccountMessage, opts ...grpc.CallOption) (*AccountMessage, error) {
+	out := new(AccountMessage)
+	err := c.cc.Invoke(ctx, "/templateprotos.Accounts/CreateAccount", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *accountsClient) Account(ctx context.Context, in *AccountRequest, opts ...grpc.CallOption) (*AccountMessage, error) {
@@ -42,6 +52,7 @@ func (c *accountsClient) Account(ctx context.Context, in *AccountRequest, opts .
 // All implementations must embed UnimplementedAccountsServer
 // for forward compatibility
 type AccountsServer interface {
+	CreateAccount(context.Context, *CreateAccountMessage) (*AccountMessage, error)
 	Account(context.Context, *AccountRequest) (*AccountMessage, error)
 	mustEmbedUnimplementedAccountsServer()
 }
@@ -50,6 +61,9 @@ type AccountsServer interface {
 type UnimplementedAccountsServer struct {
 }
 
+func (UnimplementedAccountsServer) CreateAccount(context.Context, *CreateAccountMessage) (*AccountMessage, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateAccount not implemented")
+}
 func (UnimplementedAccountsServer) Account(context.Context, *AccountRequest) (*AccountMessage, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Account not implemented")
 }
@@ -64,6 +78,24 @@ type UnsafeAccountsServer interface {
 
 func RegisterAccountsServer(s grpc.ServiceRegistrar, srv AccountsServer) {
 	s.RegisterService(&Accounts_ServiceDesc, srv)
+}
+
+func _Accounts_CreateAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateAccountMessage)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountsServer).CreateAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/templateprotos.Accounts/CreateAccount",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountsServer).CreateAccount(ctx, req.(*CreateAccountMessage))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Accounts_Account_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -91,6 +123,10 @@ var Accounts_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "templateprotos.Accounts",
 	HandlerType: (*AccountsServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateAccount",
+			Handler:    _Accounts_CreateAccount_Handler,
+		},
 		{
 			MethodName: "Account",
 			Handler:    _Accounts_Account_Handler,
