@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	pb "github.com/dmartzol/api-template/internal/protos"
 	"github.com/dmartzol/api-template/internal/storage/postgres"
 	"github.com/go-chi/chi/middleware"
 	"github.com/gorilla/mux"
@@ -18,15 +19,17 @@ const (
 
 type Handler struct {
 	*zap.SugaredLogger
+	pb.AccountsClient
 	Router *mux.Router
 	db     *postgres.DB
 }
 
-func NewHandler(db *postgres.DB, logger *zap.SugaredLogger) (*Handler, error) {
+func NewHandler(db *postgres.DB, ac pb.AccountsClient, logger *zap.SugaredLogger) (*Handler, error) {
 	h := Handler{
-		Router:        mux.NewRouter(),
-		db:            db,
-		SugaredLogger: logger,
+		AccountsClient: ac,
+		Router:         mux.NewRouter(),
+		db:             db,
+		SugaredLogger:  logger,
 	}
 
 	return &h, nil
