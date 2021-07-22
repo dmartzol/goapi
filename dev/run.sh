@@ -5,4 +5,4 @@ go mod download
 
 docker-compose up --remove-orphans -d
 
-go run main.go
+# go run main.go
