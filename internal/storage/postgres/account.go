@@ -6,6 +6,6 @@ import "github.com/dmartzol/api-template/internal/model"
 func (db *DB) AccountWithCredentials(email, password string) (*model.Account, error) {
 	var a model.Account
 	sqlStatement := `select * from accounts a where a.email = $1 and a.passhash = crypt($2, a.passhash)`
-	err := db.Get(&a, sqlStatement, email, password)
+	err := db.Client.Get(&a, sqlStatement, email, password)
 	return &a, err
 }

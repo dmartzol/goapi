@@ -20,7 +20,7 @@ const (
 
 // DB represents the database
 type DB struct {
-	*sqlx.DB
+	Client *sqlx.DB
 }
 
 type databaseConfig struct {
