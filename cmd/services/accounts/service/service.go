@@ -41,7 +41,13 @@ func (s *accountService) Run() error {
 	return nil
 }
 
-func (s *accountService) Account(ctx context.Context, accountID *pb.AccountRequest) (*pb.AccountMessage, error) {
+func (s *accountService) Account(ctx context.Context, accountID *pb.AccountID) (*pb.AccountMessage, error) {
+	a, err := s.DB.AccountWithCredentials("", "")
+	log.Printf("acc %+v", a)
+	return nil, err
+}
+
+func (s *accountService) AddAccount(ctx context.Context, addMessage *pb.AddAccountMessage) (*pb.AccountMessage, error) {
 	a, err := s.DB.AccountWithCredentials("", "")
 	log.Printf("acc %+v", a)
 	return nil, err

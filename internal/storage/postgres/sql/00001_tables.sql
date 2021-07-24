@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS accounts (
 
 CREATE TABLE IF NOT EXISTS sessions (
     id uuid PRIMARY KEY NOT NULL,
-    account_id BIGINT REFERENCES accounts (id) NOT NULL,
+    account_id uuid REFERENCES accounts (id) NOT NULL,
     last_activity_time TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     token UUID DEFAULT uuid_generate_v4() NOT NULL UNIQUE,
     expiration_time TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP + INTERVAL '1 year',

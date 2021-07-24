@@ -12,5 +12,5 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to create gateway: %v", err)
 	}
-	log.Fatal(g.ListenAndServe())
+	log.Fatal(g.Run("0.0.0.0:1100"))
 }

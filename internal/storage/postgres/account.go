@@ -9,3 +9,11 @@ func (db *DB) AccountWithCredentials(email, password string) (*model.Account, er
 	err := db.Client.Get(&a, sqlStatement, email, password)
 	return &a, err
 }
+
+// AccountWithCredentials returns an account if the email and password provided match an (email,password) pair in the db
+func (db *DB) AddAccount(email, password string) (*model.Account, error) {
+	var a model.Account
+	sqlStatement := `select * from accounts a where a.email = $1 and a.passhash = crypt($2, a.passhash)`
+	err := db.Client.Get(&a, sqlStatement, email, password)
+	return &a, err
+}

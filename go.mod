@@ -3,8 +3,6 @@ module github.com/dmartzol/api-template
 go 1.15
 
 require (
-	github.com/ClickHouse/clickhouse-go v1.4.5 // indirect
-	github.com/denisenkom/go-mssqldb v0.10.0 // indirect
 	github.com/go-chi/chi v1.5.4
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/google/uuid v1.2.0
@@ -15,11 +13,11 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/pressly/goose v2.7.0+incompatible
 	github.com/rs/cors v1.8.0
-	github.com/ziutek/mymysql v1.5.4 // indirect
 	go.uber.org/atomic v1.8.0 // indirect
 	go.uber.org/multierr v1.7.0 // indirect
 	go.uber.org/zap v1.18.1
-	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
+	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110 // indirect
+	golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1 // indirect
 	google.golang.org/grpc v1.39.0
 	google.golang.org/protobuf v1.27.1
 )
