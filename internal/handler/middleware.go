@@ -17,8 +17,8 @@ func (h *Handler) AuthMiddleware(next http.Handler) http.Handler {
 			"/v1/sessions": "POST",
 			"/v1/accounts": "POST",
 		}
-		method, in := publicRoutes[r.RequestURI]
-		if in && method == r.Method {
+		method, ok := publicRoutes[r.RequestURI]
+		if ok && method == r.Method {
 			next.ServeHTTP(w, r)
 			return
 		}
