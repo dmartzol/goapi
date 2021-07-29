@@ -14,12 +14,12 @@ type Accounts []*Account
 
 // Account represents a user account
 type Account struct {
-	Model
+	*Model
 	FirstName string `db:"first_name"`
 	LastName  string `db:"last_name"`
 	DOB       time.Time
 	Gender    *string
-	PassHash  string
+	PassHash  string `db:"pass_hash"`
 	Email     string
 }
 

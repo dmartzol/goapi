@@ -19,13 +19,13 @@ func (h *Handler) GetSession(w http.ResponseWriter, r *http.Request) {
 		httputils.RespondJSONError(w, "", http.StatusInternalServerError)
 		return
 	}
-	s, err := h.db.SessionFromToken(c.Value)
+	// s, err := h.db.SessionFromToken(c.Value)
 	if err != nil {
 		h.Errorw("could not fetch session from token", "token", c.Value, "error", err)
 		httputils.RespondJSONError(w, "", http.StatusUnauthorized)
 		return
 	}
-	httputils.RespondJSON(w, s.View(nil))
+	// httputils.RespondJSON(w, s.View(nil))
 }
 
 func (h *Handler) CreateSession(w http.ResponseWriter, r *http.Request) {
@@ -38,7 +38,7 @@ func (h *Handler) CreateSession(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// fetching account with credentials(errors reurned should be purposedly broad)
-	a, err := h.db.AccountWithCredentials(credentials.Email, credentials.Password)
+	// a, err := h.db.AccountWithCredentials(credentials.Email, credentials.Password)
 	if err != nil {
 		h.Errorw("could not fetch account", "email", credentials.Email)
 		httputils.RespondJSONError(w, "", http.StatusUnauthorized)
@@ -47,19 +47,19 @@ func (h *Handler) CreateSession(w http.ResponseWriter, r *http.Request) {
 	credentials.Password = ""
 
 	// create session and cookie
-	s, err := h.db.CreateSession(a.ID)
-	if err != nil {
-		h.Errorw("could not create session", "account", a.ID)
-		httputils.RespondJSONError(w, "", http.StatusInternalServerError)
-		return
-	}
+	// s, err := h.db.CreateSession(a.ID)
+	// if err != nil {
+	// 	h.Errorw("could not create session", "account", a.ID)
+	// 	httputils.RespondJSONError(w, "", http.StatusInternalServerError)
+	// 	return
+	// }
 	cookie := &http.Cookie{
-		Name:   CookieName,
-		Value:  s.Token,
+		Name: CookieName,
+		// Value:  s.Token,
 		MaxAge: sessionLength,
 	}
 	http.SetCookie(w, cookie)
-	httputils.RespondJSON(w, s.View(nil))
+	// httputils.RespondJSON(w, s.View(nil))
 }
 
 func (h *Handler) ExpireSession(w http.ResponseWriter, r *http.Request) {
@@ -69,7 +69,7 @@ func (h *Handler) ExpireSession(w http.ResponseWriter, r *http.Request) {
 		httputils.RespondJSONError(w, "", http.StatusInternalServerError)
 		return
 	}
-	session, err := h.db.ExpireSessionFromToken(c.Value)
+	// session, err := h.db.ExpireSessionFromToken(c.Value)
 	if err != nil {
 		h.Errorw("could not expire session", "token", c.Value, "error", err)
 		httputils.RespondJSONError(w, "", http.StatusInternalServerError)
@@ -81,5 +81,5 @@ func (h *Handler) ExpireSession(w http.ResponseWriter, r *http.Request) {
 		MaxAge: -1,
 	}
 	http.SetCookie(w, c)
-	httputils.RespondJSON(w, session.View(nil))
+	// httputils.RespondJSON(w, session.View(nil))
 }

@@ -7,7 +7,6 @@ import (
 	"github.com/dmartzol/api-template/internal/handler"
 	"github.com/dmartzol/api-template/internal/mylogger"
 	pb "github.com/dmartzol/api-template/internal/protos"
-	"github.com/dmartzol/api-template/internal/storage/postgres"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 )
@@ -16,20 +15,16 @@ const (
 	accountsHost = "accounts"
 )
 
-type GatewayService struct {
+type gatewayService struct {
 	*handler.Handler
 }
 
-func NewGatewayService(devMode bool) (*GatewayService, error) {
+func NewGatewayService(devMode bool) (*gatewayService, error) {
 	logger, err := mylogger.NewLogger(devMode)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create logger")
 	}
 	logger.Info("creating database client")
-	dbClient, err := postgres.NewDBClient()
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to create db client")
-	}
 	logger.Info("creating grcp connection")
 	accountsAddres := accountsHost + ":" + accountservice.Port
 	opts := []grpc.DialOption{grpc.WithInsecure()}
@@ -40,13 +35,13 @@ func NewGatewayService(devMode bool) (*GatewayService, error) {
 	// defer conn.Close()
 	logger.Info("creating accounts service client")
 	accountsClient := pb.NewAccountsClient(conn)
-	apiHandler, err := handler.NewHandler(dbClient, accountsClient, logger)
+	apiHandler, err := handler.NewHandler(accountsClient, logger)
 	if err != nil {
 		log.Panicf("error creating handler: %v", err)
 	}
 	logger.Info("initializing routes")
 	apiHandler.InitializeRoutes()
-	s := GatewayService{
+	s := gatewayService{
 		Handler: apiHandler,
 	}
 

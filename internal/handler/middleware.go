@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"context"
 	"database/sql"
 	"errors"
 	"net/http"
@@ -28,7 +27,7 @@ func (h *Handler) AuthMiddleware(next http.Handler) http.Handler {
 			httputils.RespondJSONError(w, "", http.StatusUnauthorized)
 			return
 		}
-		s, err := h.db.UpdateSession(c.Value)
+		// s, err := h.db.UpdateSession(c.Value)
 		if err != nil {
 			h.Errorw("could not update session", "token", c.Value, "error", err)
 			if err == sql.ErrNoRows {
@@ -47,7 +46,7 @@ func (h *Handler) AuthMiddleware(next http.Handler) http.Handler {
 
 		// Setting up context
 		ctx := r.Context()
-		ctx = context.WithValue(ctx, contextRequesterAccountIDKey, s.AccountID)
+		// ctx = context.WithValue(ctx, contextRequesterAccountIDKey, s.AccountID)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

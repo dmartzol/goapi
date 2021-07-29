@@ -30,7 +30,7 @@ func (h *Handler) createAccount(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	aM, err := h.AddAccount(ctx, &addAccountReq)
+	aM, err := h.Accounts.AddAccount(ctx, &addAccountReq)
 	if err != nil {
 		h.Errorw("failed to create account", "error", err)
 		httputils.RespondJSONError(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

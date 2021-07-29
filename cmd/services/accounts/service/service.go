@@ -2,8 +2,8 @@ package accountservice
 
 import (
 	"context"
-	"log"
 
+	"github.com/dmartzol/api-template/internal/model"
 	"github.com/dmartzol/api-template/internal/mylogger"
 	pb "github.com/dmartzol/api-template/internal/protos"
 	"github.com/dmartzol/api-template/internal/storage/postgres"
@@ -42,13 +42,23 @@ func (s *accountService) Run() error {
 }
 
 func (s *accountService) Account(ctx context.Context, accountID *pb.AccountID) (*pb.AccountMessage, error) {
-	a, err := s.DB.AccountWithCredentials("", "")
-	log.Printf("acc %+v", a)
-	return nil, err
+	s.Errorw("not implemented", "function", "Account(ctx context.Context, accountID *pb.AccountID)")
+	return nil, errors.Errorf("not implemented")
 }
 
 func (s *accountService) AddAccount(ctx context.Context, addMessage *pb.AddAccountMessage) (*pb.AccountMessage, error) {
-	a, err := s.DB.AccountWithCredentials("", "")
-	log.Printf("acc %+v", a)
-	return nil, err
+	accountInsert := &model.Account{
+		FirstName: addMessage.FirstName,
+		LastName:  addMessage.LastName,
+	}
+	newAccount, err := s.DB.AddAccount(accountInsert)
+	if err != nil {
+		s.Errorw("failed to add acount", "error", err)
+		return nil, errors.Wrap(err, "failed to add account")
+	}
+	accountMessage := pb.AccountMessage{
+		FirstName: newAccount.FirstName,
+		LastName:  newAccount.LastName,
+	}
+	return &accountMessage, nil
 }

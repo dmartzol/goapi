@@ -1,0 +1,62 @@
+@startuml myDiagram
+!define LIGHTBLUE
+!includeurl https://raw.githubusercontent.com/Drakemor/RedDress-PlantUML/master/style.puml
+
+set namespaceSeparator .
+
+class gatewayService << (S,Aquamarine) >> {
+}
+
+' Microservices
+class accountsService << (S,Aquamarine) >> {
+    storage StorageInterface
+}
+class sessionsService << (S,Aquamarine) >> {
+    storage StorageInterface
+}
+
+class handler.Handler {
+    AuthMiddleware()
+    InitializeRoutes()
+    Run()
+    --
+    createAccount()
+}
+
+interface StorageInterface {
+    + AddAccount
+}
+
+class zap.SugaredLogger {
+}
+
+class mux.Router {
+}
+
+class pb.AccountsClient {
+}
+class pb.SessionsClient {
+}
+
+' Storage
+class DB {
+}
+class sqlx.DB {
+}
+
+accountsService <|-- zap.SugaredLogger
+sessionsService <|-- zap.SugaredLogger
+
+
+gatewayService <|-- handler.Handler
+
+handler.Handler <|-- zap.SugaredLogger
+handler.Handler <|-- pb.AccountsClient
+handler.Handler <|-- pb.SessionsClient
+handler.Handler <|-- mux.Router
+handler.Handler <|-- StorageInterface
+
+StorageInterface <|-- DB
+DB <|-- sqlx.DB
+
+@enduml

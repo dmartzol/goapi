@@ -8,6 +8,7 @@ import (
 
 func main() {
 	devMode := true
+
 	g, err := gatewayservice.NewGatewayService(devMode)
 	if err != nil {
 		log.Fatalf("failed to create gateway: %v", err)

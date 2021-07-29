@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	pb "github.com/dmartzol/api-template/internal/protos"
-	"github.com/dmartzol/api-template/internal/storage/postgres"
 	"github.com/go-chi/chi/middleware"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
@@ -19,17 +18,15 @@ const (
 
 type Handler struct {
 	*zap.SugaredLogger
-	pb.AccountsClient
-	Router *mux.Router
-	db     *postgres.DB
+	Accounts pb.AccountsClient
+	Router   *mux.Router
 }
 
-func NewHandler(db *postgres.DB, ac pb.AccountsClient, logger *zap.SugaredLogger) (*Handler, error) {
+func NewHandler(ac pb.AccountsClient, logger *zap.SugaredLogger) (*Handler, error) {
 	h := Handler{
-		AccountsClient: ac,
-		Router:         mux.NewRouter(),
-		db:             db,
-		SugaredLogger:  logger,
+		Accounts:      ac,
+		Router:        mux.NewRouter(),
+		SugaredLogger: logger,
 	}
 
 	return &h, nil
