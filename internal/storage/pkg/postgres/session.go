@@ -3,14 +3,11 @@ package postgres
 import (
 	"time"
 
+	"github.com/dmartzol/api-template/internal/handler"
 	models "github.com/dmartzol/api-template/internal/model"
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 	"github.com/pkg/errors"
-)
-
-var (
-	ErrExpiredSession error
 )
 
 // SessionFromToken fetches a session by its token
@@ -70,7 +67,7 @@ func (db *DB) UpdateSession(token string) (*models.Session, error) {
 		return nil, errors.Wrapf(err, "error fetching session from token %s", token)
 	}
 	if session.ExpirationTime.Before(time.Now()) {
-		return nil, ErrExpiredSession
+		return nil, handler.ErrExpiredSession
 	}
 	var updatedSession models.Session
 	sqlStatement = `UPDATE sessions SET last_activity_time=default WHERE token = $1 RETURNING *`

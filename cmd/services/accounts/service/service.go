@@ -6,7 +6,8 @@ import (
 	"github.com/dmartzol/api-template/internal/model"
 	"github.com/dmartzol/api-template/internal/mylogger"
 	pb "github.com/dmartzol/api-template/internal/protos"
-	"github.com/dmartzol/api-template/internal/storage/postgres"
+	"github.com/dmartzol/api-template/internal/storage"
+	"github.com/dmartzol/api-template/internal/storage/pkg/postgres"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 )
@@ -20,12 +21,13 @@ func NewAccountsService(devMode bool) (*accountService, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create db client")
 	}
+	storageClient := storage.NewStorage(dbClient)
 	logger, err := mylogger.NewLogger(devMode)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create logger")
 	}
 	a := accountService{
-		DB:            dbClient,
+		Storage:       storageClient,
 		SugaredLogger: logger,
 	}
 	return &a, nil
@@ -33,7 +35,7 @@ func NewAccountsService(devMode bool) (*accountService, error) {
 
 type accountService struct {
 	pb.UnimplementedAccountsServer
-	*postgres.DB
+	*storage.Storage
 	*zap.SugaredLogger
 }
 
@@ -51,7 +53,7 @@ func (s *accountService) AddAccount(ctx context.Context, addMessage *pb.AddAccou
 		FirstName: addMessage.FirstName,
 		LastName:  addMessage.LastName,
 	}
-	newAccount, err := s.DB.AddAccount(accountInsert)
+	newAccount, err := s.Storage.AddAccount(accountInsert)
 	if err != nil {
 		s.Errorw("failed to add acount", "error", err)
 		return nil, errors.Wrap(err, "failed to add account")
