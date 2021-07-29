@@ -23,8 +23,11 @@ class handler.Handler {
     createAccount()
 }
 
-interface StorageInterface {
-    + AddAccount
+interface databaseInterface {
+}
+
+class Storage {
+    database databaseInterface
 }
 
 class zap.SugaredLogger {
@@ -33,9 +36,9 @@ class zap.SugaredLogger {
 class mux.Router {
 }
 
-class pb.AccountsClient {
+class proto.AccountsClient {
 }
-class pb.SessionsClient {
+class proto.SessionsClient {
 }
 
 ' Storage
@@ -51,12 +54,13 @@ sessionsService <|-- zap.SugaredLogger
 gatewayService <|-- handler.Handler
 
 handler.Handler <|-- zap.SugaredLogger
-handler.Handler <|-- pb.AccountsClient
-handler.Handler <|-- pb.SessionsClient
+handler.Handler <|-- proto.AccountsClient
+handler.Handler <|-- proto.SessionsClient
 handler.Handler <|-- mux.Router
-handler.Handler <|-- StorageInterface
+handler.Handler <|-- Storage
 
-StorageInterface <|-- DB
+Storage <|-- databaseInterface
+databaseInterface *-- DB
 DB <|-- sqlx.DB
 
 @enduml

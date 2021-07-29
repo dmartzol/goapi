@@ -5,8 +5,11 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/dmartzol/api-template/internal/storage/postgres"
 	"github.com/dmartzol/api-template/pkg/httputils"
+)
+
+var (
+	ErrExpiredSession error
 )
 
 func (h *Handler) AuthMiddleware(next http.Handler) http.Handler {
@@ -35,7 +38,7 @@ func (h *Handler) AuthMiddleware(next http.Handler) http.Handler {
 				httputils.RespondJSONError(w, "", http.StatusUnauthorized)
 				return
 			}
-			if errors.Is(err, postgres.ErrExpiredSession) {
+			if errors.Is(err, ErrExpiredSession) {
 				h.Errorw("expired session", "error", err)
 				httputils.RespondJSONError(w, "", http.StatusUnauthorized)
 				return
