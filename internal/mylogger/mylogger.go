@@ -5,10 +5,10 @@ import (
 	"go.uber.org/zap"
 )
 
-func NewLogger(devMode bool) (*zap.SugaredLogger, error) {
+func NewLogger(developmentMode bool) (*zap.SugaredLogger, error) {
 	var logger *zap.Logger
 	var err error
-	if devMode {
+	if developmentMode {
 		logger, err = zap.NewDevelopment()
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to create development logger")

@@ -16,13 +16,13 @@ const (
 	Port = "50051"
 )
 
-func NewAccountsService(devMode bool) (*accountService, error) {
-	dbClient, err := postgres.NewDBClient()
+func NewAccountsService(dbname, dbusername, dbhostname string, humanReadableLogs bool) (*accountService, error) {
+	dbClient, err := postgres.NewDBClient(dbname, dbusername, dbhostname)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create db client")
 	}
 	storageClient := storage.NewStorage(dbClient)
-	logger, err := mylogger.NewLogger(devMode)
+	logger, err := mylogger.NewLogger(humanReadableLogs)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create logger")
 	}

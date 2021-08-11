@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net"
 
@@ -10,8 +11,19 @@ import (
 )
 
 func main() {
-	devMode := true
-	aS, err := accountservice.NewAccountsService(devMode)
+	var (
+		humanReadable = flag.Bool("d", false, "")
+		dbhostname    = flag.String("dbhostname", "database", "")
+		dbusername    = flag.String("dbusername", "database", "")
+		dbname        = flag.String("dbname", "database", "")
+	)
+	flag.Parse()
+	aS, err := accountservice.NewAccountsService(
+		*dbname,
+		*dbusername,
+		*dbhostname,
+		*humanReadable,
+	)
 	if err != nil {
 		log.Fatalf("failed to create accounts service: %+v", err)
 	}

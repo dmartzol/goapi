@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/dmartzol/api-template/pkg/environment"
 	"github.com/jmoiron/sqlx"
@@ -11,11 +10,11 @@ import (
 )
 
 const (
-	dbport = "DBPORT"
-	dbuser = "PGUSER"
-	dbpass = "PGPASSWORD"
-	dbhost = "PGHOST"
-	dbname = "PGDATABASE"
+	dbport   = "DBPORT"
+	dbuser   = "PGUSER"
+	dbpass   = "PGPASSWORD"
+	hostname = "PGHOST"
+	dbname   = "PGDATABASE"
 )
 
 // DB represents the database
@@ -23,30 +22,19 @@ type DB struct {
 	Client *sqlx.DB
 }
 
-type databaseConfig struct {
+type DatabaseConfig struct {
 	Name, User, Password, Host string
 	Port                       int
 }
 
-func NewDBClient() (*DB, error) {
-	dbConfig := databaseConfig{}
-	name, ok := os.LookupEnv(dbname)
-	if !ok {
-		return nil, errors.New("PGDATABASE environment variable required but not set")
+func NewDBClient(dbname, username, hostname string) (*DB, error) {
+	dbConfig := DatabaseConfig{
+		Port:     environment.GetEnvInt(dbport, 5432),
+		Password: environment.GetEnvString(dbpass, ""),
+		Host:     hostname,
+		User:     username,
+		Name:     dbname,
 	}
-	user, ok := os.LookupEnv(dbuser)
-	if !ok {
-		return nil, errors.New("PGUSER environment variable required but not set")
-	}
-	host, ok := os.LookupEnv(dbhost)
-	if !ok {
-		return nil, errors.New("PGHOST environment variable required but not set")
-	}
-	dbConfig.Port = environment.GetEnvInt(dbport, 5432)
-	dbConfig.Password = environment.GetEnvString(dbpass, "")
-	dbConfig.Host = host
-	dbConfig.User = user
-	dbConfig.Name = name
 
 	dataSourceName := "host=%s port=%d user=%s password=%s dbname=%s sslmode=disable"
 	dataSourceName = fmt.Sprintf(dataSourceName, dbConfig.Host, dbConfig.Port, dbConfig.User, dbConfig.Password, dbConfig.Name)
