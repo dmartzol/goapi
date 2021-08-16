@@ -19,8 +19,8 @@ type gatewayService struct {
 	*handler.Handler
 }
 
-func NewGatewayService(devMode bool) (*gatewayService, error) {
-	logger, err := logger.New(devMode)
+func NewGatewayService(structuredLogging bool) (*gatewayService, error) {
+	logger, err := logger.New(structuredLogging)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create logger")
 	}

@@ -12,17 +12,17 @@ import (
 
 func main() {
 	var (
-		humanReadable = flag.Bool("d", false, "")
-		dbhostname    = flag.String("dbhostname", "database", "")
-		dbusername    = flag.String("dbusername", "database", "")
-		dbname        = flag.String("dbname", "database", "")
+		structuredLogging = flag.Bool("d", false, "")
+		dbhostname        = flag.String("dbhostname", "database", "")
+		dbusername        = flag.String("dbusername", "database", "")
+		dbname            = flag.String("dbname", "database", "")
 	)
 	flag.Parse()
 	aS, err := accountservice.NewAccountsService(
 		*dbname,
 		*dbusername,
 		*dbhostname,
-		*humanReadable,
+		*structuredLogging,
 	)
 	if err != nil {
 		log.Fatalf("failed to create accounts service: %+v", err)

@@ -7,9 +7,9 @@ import (
 )
 
 func main() {
-	devMode := true
+	structuredLogging := true
 
-	g, err := gatewayservice.NewGatewayService(devMode)
+	g, err := gatewayservice.NewGatewayService(structuredLogging)
 	if err != nil {
 		log.Fatalf("failed to create gateway: %v", err)
 	}
