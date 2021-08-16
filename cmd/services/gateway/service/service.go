@@ -5,7 +5,7 @@ import (
 
 	accountservice "github.com/dmartzol/api-template/cmd/services/accounts/service"
 	"github.com/dmartzol/api-template/internal/handler"
-	"github.com/dmartzol/api-template/internal/mylogger"
+	"github.com/dmartzol/api-template/internal/logger"
 	pb "github.com/dmartzol/api-template/internal/protos"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
@@ -20,7 +20,7 @@ type gatewayService struct {
 }
 
 func NewGatewayService(devMode bool) (*gatewayService, error) {
-	logger, err := mylogger.NewLogger(devMode)
+	logger, err := logger.New(devMode)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create logger")
 	}

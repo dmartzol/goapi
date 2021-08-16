@@ -3,8 +3,8 @@ package accountservice
 import (
 	"context"
 
+	"github.com/dmartzol/api-template/internal/logger"
 	"github.com/dmartzol/api-template/internal/model"
-	"github.com/dmartzol/api-template/internal/mylogger"
 	pb "github.com/dmartzol/api-template/internal/protos"
 	"github.com/dmartzol/api-template/internal/storage"
 	"github.com/dmartzol/api-template/internal/storage/pkg/postgres"
@@ -22,7 +22,7 @@ func NewAccountsService(dbname, dbusername, dbhostname string, humanReadableLogs
 		return nil, errors.Wrap(err, "failed to create db client")
 	}
 	storageClient := storage.NewStorage(dbClient)
-	logger, err := mylogger.NewLogger(humanReadableLogs)
+	logger, err := logger.New(humanReadableLogs)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create logger")
 	}
