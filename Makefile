@@ -76,6 +76,10 @@ migrate_down:
 
 e2e:
 	$(call log_info,Starting test environment:)
+	go test ./... -v
+	docker compose up -d
+	TEST_INTEGRATION=TRUE go test ./... -v 
+	docker compose down 
 
 proto:
 	protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative internal/protos/account.proto
