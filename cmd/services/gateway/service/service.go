@@ -19,7 +19,7 @@ type gatewayService struct {
 	*handler.Handler
 }
 
-func New(structuredLogging bool) (*gatewayService, error) {
+func New(structuredLogging, verbose bool) (*gatewayService, error) {
 	logger, err := logger.New(structuredLogging)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create logger")
@@ -34,7 +34,7 @@ func New(structuredLogging bool) (*gatewayService, error) {
 	// defer conn.Close()
 	logger.Info("creating accounts service client")
 	accountsClient := pb.NewAccountsClient(conn)
-	apiHandler, err := handler.New(accountsClient, logger)
+	apiHandler, err := handler.New(accountsClient, logger, verbose)
 	if err != nil {
 		log.Panicf("error creating handler: %v", err)
 	}

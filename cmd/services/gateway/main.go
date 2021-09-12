@@ -8,8 +8,9 @@ import (
 
 func main() {
 	structuredLogging := false
+	verbose := true
 
-	g, err := gatewayservice.New(structuredLogging)
+	g, err := gatewayservice.New(structuredLogging, verbose)
 	if err != nil {
 		log.Fatalf("failed to create gateway: %v", err)
 	}

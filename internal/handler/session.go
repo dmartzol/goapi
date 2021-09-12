@@ -30,7 +30,7 @@ func (h *Handler) GetSession(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) CreateSession(w http.ResponseWriter, r *http.Request) {
 	var credentials models.LoginCredentials
-	err := httputils.Unmarshal(r, &credentials)
+	err := h.Unmarshal(r, &credentials)
 	if err != nil {
 		h.Errorw("could not unmarshal", "error", err)
 		httputils.RespondJSONError(w, "", http.StatusInternalServerError)

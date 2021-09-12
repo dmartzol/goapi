@@ -13,7 +13,7 @@ import (
 
 func (h *Handler) createAccount(w http.ResponseWriter, r *http.Request) {
 	var req api.CreateAccountRequest
-	err := httputils.Unmarshal(r, &req)
+	err := h.Unmarshal(r, &req)
 	if err != nil {
 		h.Errorw("could not unmarshal", "error", err)
 		httputils.RespondJSONError(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

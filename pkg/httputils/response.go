@@ -3,28 +3,12 @@ package httputils
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"log"
 	"net/http"
 )
 
 type JSONError struct {
 	Error      string
 	StatusCode int
-}
-
-func Unmarshal(r *http.Request, iface interface{}) error {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Printf("ReadAll: %+v", err)
-		return err
-	}
-	err = json.Unmarshal(body, &iface)
-	if err != nil {
-		log.Printf("json.Unmarshal %+v", err)
-		return err
-	}
-	return nil
 }
 
 func RespondText(w http.ResponseWriter, text string, code int) {
