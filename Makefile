@@ -1,5 +1,5 @@
 POSTGRES_USER := user-development
-DB_NAME := test-db
+DB_NAME := e2e-db
 POSTGRES_PASSWORD := secret
 POSTGRES_HOST := localhost
 POSTGRES_PORT := 5432
@@ -49,47 +49,30 @@ test:
 	go test -race -v ./... -cover
 	$(call log_success,All tests succeeded)
 
-create:
-	docker create --name postgres13 \
-		-p $(POSTGRES_PORT):$(POSTGRES_PORT) \
-		-e POSTGRES_USER=$(POSTGRES_USER) \
-		-e POSTGRES_PASSWORD=secret \
-		-e PGPASSWORD=$(POSTGRES_PASSWORD) \
-		postgres:13.3
-
-start:
-	docker start postgres13
-
-sleep:
-	sleep 10
-
-createdb:
-	docker exec \
-		-it postgres13 createdb \
-		--username=$(POSTGRES_USER) \
-		--owner=$(POSTGRES_USER) $(DB_NAME)
-
 migrate_up:
 	migrate -path $(MIGRATIONS_PATH) -database="$(POSTGRESQL_URL)" -verbose up
 
 migrate_down:
 	migrate -path $(MIGRATIONS_PATH) -database="$(POSTGRESQL_URL)" -verbose down 1
 
-stop:
-	docker stop postgres13
+up.e2e:
+	docker compose --file docker-compose.e2e.yaml up \
+					--remove-orphans \
+					--build \
+					--detach
 
-remove:
-	docker rm postgres13
+down.e2e:
+	docker compose --file docker-compose.e2e.yaml down
 	$(call log_success,succeeded!)
 
-workflow: create start sleep createdb migrate_up migrate_down dropdb stop remove
+test.e2e:
+	go test -tags=e2e ./... -v
 
-dropdb:
-	docker exec -it postgres13 dropdb --username=$(POSTGRES_USER) $(DB_NAME)
+e2e.workflow: up.e2e migrate_up test.e2e migrate_down down.e2e
 
 e2e:
 	$(call log_info,Starting test environment:)
-	go test ./... -v
+	go test -tags=e2e ./... -v
 	docker compose up -d
 	TEST_INTEGRATION=TRUE go test ./... -v 
 	docker compose down 
