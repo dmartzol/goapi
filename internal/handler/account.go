@@ -38,6 +38,11 @@ func (h *Handler) createAccount(w http.ResponseWriter, r *http.Request) {
 	}
 	h.Debugf("aM: %v", aM)
 	a, err := model.MarshallAccount(aM)
+	if err != nil {
+		h.Errorw("failed to marshall account", "error", err)
+		httputils.RespondJSONError(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
 	h.Debugf("a: %v", a)
 	httputils.RespondJSONError(w, http.StatusText(http.StatusNotImplemented), http.StatusNotImplemented)
 }

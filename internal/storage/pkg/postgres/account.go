@@ -13,6 +13,12 @@ func (a *Account) Validate() error {
 	if a.FirstName == "" {
 		return errors.Errorf("invalid name")
 	}
+	if a.LastName == "" {
+		return errors.Errorf("invalid last name")
+	}
+	if a.Email == "" {
+		return errors.Errorf("empty email")
+	}
 	return nil
 }
 
@@ -34,7 +40,7 @@ func (db *DB) AddAccount(a *model.Account) (*model.Account, error) {
 		Account: a,
 	}
 	if err := dbAccount.Validate(); err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "validation failed")
 	}
 
 	dbAccount.Model = model.NewModel()
