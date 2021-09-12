@@ -9,7 +9,7 @@ import (
 func main() {
 	structuredLogging := false
 
-	g, err := gatewayservice.NewGatewayService(structuredLogging)
+	g, err := gatewayservice.New(structuredLogging)
 	if err != nil {
 		log.Fatalf("failed to create gateway: %v", err)
 	}
