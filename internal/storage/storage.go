@@ -10,7 +10,7 @@ type databaseInterface interface {
 	AddAccount(a *model.Account) (*model.Account, error)
 }
 
-func NewStorage(db databaseInterface) *Storage {
+func New(db databaseInterface) *Storage {
 	return &Storage{database: db}
 }
 

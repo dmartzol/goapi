@@ -22,7 +22,7 @@ type Handler struct {
 	Router   *mux.Router
 }
 
-func NewHandler(ac pb.AccountsClient, logger *zap.SugaredLogger) (*Handler, error) {
+func New(ac pb.AccountsClient, logger *zap.SugaredLogger) (*Handler, error) {
 	h := Handler{
 		Accounts:      ac,
 		Router:        mux.NewRouter(),
