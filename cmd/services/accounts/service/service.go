@@ -5,7 +5,7 @@ import (
 
 	"github.com/dmartzol/goapi/goapi"
 	"github.com/dmartzol/goapi/internal/logger"
-	pb "github.com/dmartzol/goapi/internal/protos"
+	pb "github.com/dmartzol/goapi/internal/proto"
 	"github.com/dmartzol/goapi/internal/storage"
 	"github.com/dmartzol/goapi/internal/storage/pkg/postgres"
 	"github.com/pkg/errors"

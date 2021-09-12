@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	pb "github.com/dmartzol/goapi/internal/protos"
+	pb "github.com/dmartzol/goapi/internal/proto"
 	"github.com/dmartzol/goapi/pkg/timeutils"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"

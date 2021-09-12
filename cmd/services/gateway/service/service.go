@@ -6,7 +6,7 @@ import (
 	accountservice "github.com/dmartzol/goapi/cmd/services/accounts/service"
 	"github.com/dmartzol/goapi/internal/handler"
 	"github.com/dmartzol/goapi/internal/logger"
-	pb "github.com/dmartzol/goapi/internal/protos"
+	pb "github.com/dmartzol/goapi/internal/proto"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 )

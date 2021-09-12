@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	pb "github.com/dmartzol/goapi/internal/protos"
+	pb "github.com/dmartzol/goapi/internal/proto"
 	"github.com/go-chi/chi/middleware"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"

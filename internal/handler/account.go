@@ -7,7 +7,7 @@ import (
 
 	"github.com/dmartzol/goapi/goapi"
 	"github.com/dmartzol/goapi/internal/api"
-	pb "github.com/dmartzol/goapi/internal/protos"
+	pb "github.com/dmartzol/goapi/internal/proto"
 	"github.com/dmartzol/goapi/pkg/httputils"
 )
 

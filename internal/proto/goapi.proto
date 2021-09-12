@@ -1,8 +1,15 @@
 syntax = "proto3";
-package templateprotos;
 
-option go_package = "github.com/dmartzol/api-template/protos/templateprotos";
+package proto;
 import "google/protobuf/timestamp.proto";
+option go_package = "github.com/dmartzol/goapi/internal/proto/proto";
+
+
+message Model {
+    string id = 1;
+    google.protobuf.Timestamp created_time = 2;
+    google.protobuf.Timestamp updated_time = 3;
+}
 
 service Accounts {
     rpc AddAccount (AddAccountMessage) returns (AccountMessage) {}
