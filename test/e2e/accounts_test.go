@@ -1,5 +1,6 @@
 //+build e2e
 
+// Package httptest_test provides functional tests
 package httptest_test
 
 import (
