@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	pb "github.com/dmartzol/api-template/internal/protos"
+	pb "github.com/dmartzol/goapi/internal/protos"
 	"github.com/go-chi/chi/middleware"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
@@ -12,7 +12,7 @@ import (
 
 const (
 	apiVersionNumber = "0.0.1"
-	CookieName       = "API-Template-Cookie"
+	CookieName       = "goapi-Cookie"
 	idQueryParameter = "id"
 )
 

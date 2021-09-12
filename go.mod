@@ -1,4 +1,4 @@
-module github.com/dmartzol/api-template
+module github.com/dmartzol/goapi
 
 go 1.15
 

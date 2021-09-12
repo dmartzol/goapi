@@ -1,4 +1,4 @@
-package model
+package goapi
 
 import (
 	"time"

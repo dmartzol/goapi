@@ -5,7 +5,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/dmartzol/api-template/pkg/httputils"
+	"github.com/dmartzol/goapi/pkg/httputils"
 )
 
 var (

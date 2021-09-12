@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/dmartzol/api-template/pkg/httputils"
+	"github.com/dmartzol/goapi/pkg/httputils"
 )
 
 func (h *Handler) Version(w http.ResponseWriter, r *http.Request) {

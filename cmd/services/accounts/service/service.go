@@ -3,11 +3,11 @@ package accountservice
 import (
 	"context"
 
-	"github.com/dmartzol/api-template/internal/logger"
-	"github.com/dmartzol/api-template/internal/model"
-	pb "github.com/dmartzol/api-template/internal/protos"
-	"github.com/dmartzol/api-template/internal/storage"
-	"github.com/dmartzol/api-template/internal/storage/pkg/postgres"
+	"github.com/dmartzol/goapi/goapi"
+	"github.com/dmartzol/goapi/internal/logger"
+	pb "github.com/dmartzol/goapi/internal/protos"
+	"github.com/dmartzol/goapi/internal/storage"
+	"github.com/dmartzol/goapi/internal/storage/pkg/postgres"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 )
@@ -49,7 +49,7 @@ func (s *accountService) Account(ctx context.Context, accountID *pb.AccountID) (
 }
 
 func (s *accountService) AddAccount(ctx context.Context, addMessage *pb.AddAccountMessage) (*pb.AccountMessage, error) {
-	accountInsert := &model.Account{
+	accountInsert := &goapi.Account{
 		FirstName: addMessage.FirstName,
 		LastName:  addMessage.LastName,
 	}

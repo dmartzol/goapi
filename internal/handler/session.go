@@ -3,8 +3,8 @@ package handler
 import (
 	"net/http"
 
-	models "github.com/dmartzol/api-template/internal/model"
-	"github.com/dmartzol/api-template/pkg/httputils"
+	"github.com/dmartzol/goapi/goapi"
+	"github.com/dmartzol/goapi/pkg/httputils"
 )
 
 const (
@@ -29,7 +29,7 @@ func (h *Handler) GetSession(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) CreateSession(w http.ResponseWriter, r *http.Request) {
-	var credentials models.LoginCredentials
+	var credentials goapi.LoginCredentials
 	err := h.Unmarshal(r, &credentials)
 	if err != nil {
 		h.Errorw("could not unmarshal", "error", err)

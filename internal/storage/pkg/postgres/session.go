@@ -3,30 +3,30 @@ package postgres
 import (
 	"time"
 
-	"github.com/dmartzol/api-template/internal/handler"
-	models "github.com/dmartzol/api-template/internal/model"
+	"github.com/dmartzol/goapi/goapi"
+	"github.com/dmartzol/goapi/internal/handler"
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 	"github.com/pkg/errors"
 )
 
 // SessionFromToken fetches a session by its token
-func (db *DB) SessionFromToken(token string) (*models.Session, error) {
-	var s models.Session
+func (db *DB) SessionFromToken(token string) (*goapi.Session, error) {
+	var s goapi.Session
 	sqlStatement := `SELECT * FROM sessions WHERE token = $1`
 	err := db.Client.Get(&s, sqlStatement, token)
 	return &s, err
 }
 
 // CreateSession creates a new session
-func (db *DB) AddSession(session *models.Session) (*models.Session, error) {
+func (db *DB) AddSession(session *goapi.Session) (*goapi.Session, error) {
 	if err := session.Validate(); err != nil {
 		return nil, err
 	}
 
-	session.Model = models.NewModel()
+	session.Model = goapi.NewModel()
 
-	var s models.Session
+	var s goapi.Session
 	sqlInsert := `INSERT INTO sessions (account_id) VALUES ($1)`
 	err := db.Client.Get(&s, sqlInsert, session.AccountID)
 
@@ -38,28 +38,28 @@ func (db *DB) AddSession(session *models.Session) (*models.Session, error) {
 }
 
 // CreateSession creates a new session
-func (db *DB) CreateSession(accountID uuid.UUID) (*models.Session, error) {
-	var s models.Session
+func (db *DB) CreateSession(accountID uuid.UUID) (*goapi.Session, error) {
+	var s goapi.Session
 	sqlInsert := `INSERT INTO sessions (account_id) VALUES ($1) RETURNING *`
 	err := db.Client.Get(&s, sqlInsert, accountID)
 	return &s, err
 }
 
 // ExpireSessionFromToken expires the session with the given token
-func (db *DB) ExpireSessionFromToken(token string) (*models.Session, error) {
-	var s models.Session
+func (db *DB) ExpireSessionFromToken(token string) (*goapi.Session, error) {
+	var s goapi.Session
 	sqlStatement := `UPDATE sessions SET expiration_time = current_timestamp WHERE token = $1 RETURNING *`
 	err := db.Client.Get(&s, sqlStatement, token)
 	return &s, err
 }
 
 // UpdateSession updates a session in the db with the current timestamp
-func (db *DB) UpdateSession(token string) (*models.Session, error) {
+func (db *DB) UpdateSession(token string) (*goapi.Session, error) {
 	tx, err := db.Client.Beginx()
 	if err != nil {
 		return nil, err
 	}
-	var session models.Session
+	var session goapi.Session
 	sqlStatement := `SELECT * FROM sessions WHERE token = $1`
 	tx.Get(&session, sqlStatement, token)
 	if err != nil {
@@ -69,7 +69,7 @@ func (db *DB) UpdateSession(token string) (*models.Session, error) {
 	if session.ExpirationTime.Before(time.Now()) {
 		return nil, handler.ErrExpiredSession
 	}
-	var updatedSession models.Session
+	var updatedSession goapi.Session
 	sqlStatement = `UPDATE sessions SET last_activity_time=default WHERE token = $1 RETURNING *`
 	err = tx.Get(&updatedSession, sqlStatement, token)
 	if err != nil {

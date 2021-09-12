@@ -3,7 +3,7 @@ package postgres
 import (
 	"fmt"
 
-	"github.com/dmartzol/api-template/pkg/environment"
+	"github.com/dmartzol/goapi/pkg/environment"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"github.com/pkg/errors"

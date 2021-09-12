@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	gatewayservice "github.com/dmartzol/api-template/cmd/services/gateway/service"
+	gatewayservice "github.com/dmartzol/goapi/cmd/services/gateway/service"
 )
 
 func main() {

@@ -1,19 +1,19 @@
 package storage
 
-import "github.com/dmartzol/api-template/internal/model"
+import "github.com/dmartzol/goapi/goapi"
 
 type Storage struct {
 	database databaseInterface
 }
 
 type databaseInterface interface {
-	AddAccount(a *model.Account) (*model.Account, error)
+	AddAccount(a *goapi.Account) (*goapi.Account, error)
 }
 
 func New(db databaseInterface) *Storage {
 	return &Storage{database: db}
 }
 
-func (s *Storage) AddAccount(a *model.Account) (*model.Account, error) {
+func (s *Storage) AddAccount(a *goapi.Account) (*goapi.Account, error) {
 	return s.database.AddAccount(a)
 }

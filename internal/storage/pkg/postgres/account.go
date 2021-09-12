@@ -1,12 +1,12 @@
 package postgres
 
 import (
-	"github.com/dmartzol/api-template/internal/model"
+	"github.com/dmartzol/goapi/goapi"
 	"github.com/pkg/errors"
 )
 
 type Account struct {
-	*model.Account
+	*goapi.Account
 }
 
 func (a *Account) Validate() error {
@@ -22,20 +22,20 @@ func (a *Account) Validate() error {
 	return nil
 }
 
-func (a *Account) Build() *model.Account {
+func (a *Account) Build() *goapi.Account {
 	return a.Account
 }
 
 // AccountWithCredentials returns an account if the email and password provided match an (email,password) pair in the db
-func (db *DB) AccountWithCredentials(email, password string) (*model.Account, error) {
-	var a model.Account
+func (db *DB) AccountWithCredentials(email, password string) (*goapi.Account, error) {
+	var a goapi.Account
 	sqlSelect := `select * from accounts a where a.email = $1 and a.passhash = crypt($2, a.passhash)`
 	err := db.Client.Get(&a, sqlSelect, email, password)
 	return &a, err
 }
 
 // AddAccount insert a new account in the database
-func (db *DB) AddAccount(a *model.Account) (*model.Account, error) {
+func (db *DB) AddAccount(a *goapi.Account) (*goapi.Account, error) {
 	dbAccount := &Account{
 		Account: a,
 	}
@@ -43,7 +43,7 @@ func (db *DB) AddAccount(a *model.Account) (*model.Account, error) {
 		return nil, errors.Wrap(err, "validation failed")
 	}
 
-	dbAccount.Model = model.NewModel()
+	dbAccount.Model = goapi.NewModel()
 
 	sqlInsert := `
 	insert into accounts (

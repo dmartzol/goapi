@@ -5,8 +5,8 @@ import (
 	"log"
 	"net"
 
-	accountservice "github.com/dmartzol/api-template/cmd/services/accounts/service"
-	pb "github.com/dmartzol/api-template/internal/protos"
+	accountservice "github.com/dmartzol/goapi/cmd/services/accounts/service"
+	pb "github.com/dmartzol/goapi/internal/protos"
 	"google.golang.org/grpc"
 )
 

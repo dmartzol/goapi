@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dmartzol/api-template/internal/api"
-	"github.com/dmartzol/api-template/internal/model"
-	pb "github.com/dmartzol/api-template/internal/protos"
-	"github.com/dmartzol/api-template/pkg/httputils"
+	"github.com/dmartzol/goapi/goapi"
+	"github.com/dmartzol/goapi/internal/api"
+	pb "github.com/dmartzol/goapi/internal/protos"
+	"github.com/dmartzol/goapi/pkg/httputils"
 )
 
 func (h *Handler) createAccount(w http.ResponseWriter, r *http.Request) {
@@ -37,7 +37,7 @@ func (h *Handler) createAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	h.Debugf("aM: %v", aM)
-	a, err := model.MarshallAccount(aM)
+	a, err := goapi.MarshallAccount(aM)
 	if err != nil {
 		h.Errorw("failed to marshall account", "error", err)
 		httputils.RespondJSONError(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

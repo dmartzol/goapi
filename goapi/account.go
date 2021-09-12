@@ -1,11 +1,11 @@
-package model
+package goapi
 
 import (
 	"strings"
 	"time"
 
-	pb "github.com/dmartzol/api-template/internal/protos"
-	"github.com/dmartzol/api-template/pkg/timeutils"
+	pb "github.com/dmartzol/goapi/internal/protos"
+	"github.com/dmartzol/goapi/pkg/timeutils"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 )

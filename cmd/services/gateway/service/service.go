@@ -3,10 +3,10 @@ package gatewayservice
 import (
 	"log"
 
-	accountservice "github.com/dmartzol/api-template/cmd/services/accounts/service"
-	"github.com/dmartzol/api-template/internal/handler"
-	"github.com/dmartzol/api-template/internal/logger"
-	pb "github.com/dmartzol/api-template/internal/protos"
+	accountservice "github.com/dmartzol/goapi/cmd/services/accounts/service"
+	"github.com/dmartzol/goapi/internal/handler"
+	"github.com/dmartzol/goapi/internal/logger"
+	pb "github.com/dmartzol/goapi/internal/protos"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 )
