@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	structuredLogging := true
+	structuredLogging := false
 
 	g, err := gatewayservice.NewGatewayService(structuredLogging)
 	if err != nil {

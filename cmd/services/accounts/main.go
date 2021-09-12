@@ -14,7 +14,7 @@ func main() {
 	var (
 		structuredLogging = flag.Bool("d", false, "")
 		dbhostname        = flag.String("dbhostname", "database", "")
-		dbusername        = flag.String("dbusername", "database", "")
+		dbusername        = flag.String("dbusername", "user-development", "")
 		dbname            = flag.String("dbname", "database", "")
 	)
 	flag.Parse()
