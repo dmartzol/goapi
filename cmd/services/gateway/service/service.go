@@ -24,7 +24,6 @@ func New(structuredLogging bool) (*gatewayService, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create logger")
 	}
-	logger.Info("creating database client")
 	logger.Info("creating grcp connection")
 	accountsAddres := accountsHost + ":" + accountservice.Port
 	opts := []grpc.DialOption{grpc.WithInsecure()}
