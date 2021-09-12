@@ -18,7 +18,7 @@ func main() {
 		dbname            = flag.String("dbname", "database", "")
 	)
 	flag.Parse()
-	aS, err := accountservice.NewAccountsService(
+	aS, err := accountservice.New(
 		*dbname,
 		*dbusername,
 		*dbhostname,

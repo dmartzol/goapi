@@ -16,7 +16,7 @@ const (
 	Port = "50051"
 )
 
-func NewAccountsService(dbname, dbusername, dbhostname string, humanReadableLogs bool) (*accountService, error) {
+func New(dbname, dbusername, dbhostname string, humanReadableLogs bool) (*accountService, error) {
 	dbClient, err := postgres.NewDBClient(dbname, dbusername, dbhostname)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create db client")
