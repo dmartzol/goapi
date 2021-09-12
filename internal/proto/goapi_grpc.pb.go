@@ -18,8 +18,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AccountsClient interface {
-	AddAccount(ctx context.Context, in *AddAccountMessage, opts ...grpc.CallOption) (*AccountMessage, error)
-	Account(ctx context.Context, in *AccountID, opts ...grpc.CallOption) (*AccountMessage, error)
+	AddAccount(ctx context.Context, in *AddAccountMessage, opts ...grpc.CallOption) (*Account, error)
+	FetchAccount(ctx context.Context, in *AccountID, opts ...grpc.CallOption) (*Account, error)
 }
 
 type accountsClient struct {
@@ -30,8 +30,8 @@ func NewAccountsClient(cc grpc.ClientConnInterface) AccountsClient {
 	return &accountsClient{cc}
 }
 
-func (c *accountsClient) AddAccount(ctx context.Context, in *AddAccountMessage, opts ...grpc.CallOption) (*AccountMessage, error) {
-	out := new(AccountMessage)
+func (c *accountsClient) AddAccount(ctx context.Context, in *AddAccountMessage, opts ...grpc.CallOption) (*Account, error) {
+	out := new(Account)
 	err := c.cc.Invoke(ctx, "/proto.Accounts/AddAccount", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -39,9 +39,9 @@ func (c *accountsClient) AddAccount(ctx context.Context, in *AddAccountMessage, 
 	return out, nil
 }
 
-func (c *accountsClient) Account(ctx context.Context, in *AccountID, opts ...grpc.CallOption) (*AccountMessage, error) {
-	out := new(AccountMessage)
-	err := c.cc.Invoke(ctx, "/proto.Accounts/Account", in, out, opts...)
+func (c *accountsClient) FetchAccount(ctx context.Context, in *AccountID, opts ...grpc.CallOption) (*Account, error) {
+	out := new(Account)
+	err := c.cc.Invoke(ctx, "/proto.Accounts/FetchAccount", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -52,8 +52,8 @@ func (c *accountsClient) Account(ctx context.Context, in *AccountID, opts ...grp
 // All implementations must embed UnimplementedAccountsServer
 // for forward compatibility
 type AccountsServer interface {
-	AddAccount(context.Context, *AddAccountMessage) (*AccountMessage, error)
-	Account(context.Context, *AccountID) (*AccountMessage, error)
+	AddAccount(context.Context, *AddAccountMessage) (*Account, error)
+	FetchAccount(context.Context, *AccountID) (*Account, error)
 	mustEmbedUnimplementedAccountsServer()
 }
 
@@ -61,11 +61,11 @@ type AccountsServer interface {
 type UnimplementedAccountsServer struct {
 }
 
-func (UnimplementedAccountsServer) AddAccount(context.Context, *AddAccountMessage) (*AccountMessage, error) {
+func (UnimplementedAccountsServer) AddAccount(context.Context, *AddAccountMessage) (*Account, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddAccount not implemented")
 }
-func (UnimplementedAccountsServer) Account(context.Context, *AccountID) (*AccountMessage, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Account not implemented")
+func (UnimplementedAccountsServer) FetchAccount(context.Context, *AccountID) (*Account, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FetchAccount not implemented")
 }
 func (UnimplementedAccountsServer) mustEmbedUnimplementedAccountsServer() {}
 
@@ -98,20 +98,20 @@ func _Accounts_AddAccount_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Accounts_Account_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Accounts_FetchAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AccountID)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccountsServer).Account(ctx, in)
+		return srv.(AccountsServer).FetchAccount(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/proto.Accounts/Account",
+		FullMethod: "/proto.Accounts/FetchAccount",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountsServer).Account(ctx, req.(*AccountID))
+		return srv.(AccountsServer).FetchAccount(ctx, req.(*AccountID))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -128,8 +128,8 @@ var Accounts_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Accounts_AddAccount_Handler,
 		},
 		{
-			MethodName: "Account",
-			Handler:    _Accounts_Account_Handler,
+			MethodName: "FetchAccount",
+			Handler:    _Accounts_FetchAccount_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

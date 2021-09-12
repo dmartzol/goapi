@@ -43,12 +43,12 @@ func (s *accountService) Run() error {
 	return nil
 }
 
-func (s *accountService) Account(ctx context.Context, accountID *pb.AccountID) (*pb.AccountMessage, error) {
+func (s *accountService) Account(ctx context.Context, accountID *pb.AccountID) (*pb.Account, error) {
 	s.Errorw("not implemented", "function", "Account(ctx context.Context, accountID *pb.AccountID)")
 	return nil, errors.Errorf("not implemented")
 }
 
-func (s *accountService) AddAccount(ctx context.Context, addMessage *pb.AddAccountMessage) (*pb.AccountMessage, error) {
+func (s *accountService) AddAccount(ctx context.Context, addMessage *pb.AddAccountMessage) (*pb.Account, error) {
 	accountInsert := &goapi.Account{
 		FirstName: addMessage.FirstName,
 		LastName:  addMessage.LastName,
@@ -58,7 +58,7 @@ func (s *accountService) AddAccount(ctx context.Context, addMessage *pb.AddAccou
 		s.Errorw("failed to add acount", "error", err)
 		return nil, errors.Wrap(err, "failed to add account")
 	}
-	accountMessage := pb.AccountMessage{
+	accountMessage := pb.Account{
 		FirstName: newAccount.FirstName,
 		LastName:  newAccount.LastName,
 	}

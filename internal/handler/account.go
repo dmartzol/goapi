@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dmartzol/goapi/goapi"
 	"github.com/dmartzol/goapi/internal/api"
+	"github.com/dmartzol/goapi/internal/proto"
 	pb "github.com/dmartzol/goapi/internal/proto"
 	"github.com/dmartzol/goapi/pkg/httputils"
 )
@@ -37,7 +37,7 @@ func (h *Handler) createAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	h.Debugf("aM: %v", aM)
-	a, err := goapi.MarshallAccount(aM)
+	a, err := proto.GoapiAccount(aM)
 	if err != nil {
 		h.Errorw("failed to marshall account", "error", err)
 		httputils.RespondJSONError(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

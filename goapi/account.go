@@ -4,7 +4,6 @@ import (
 	"strings"
 	"time"
 
-	pb "github.com/dmartzol/goapi/internal/proto"
 	"github.com/dmartzol/goapi/pkg/timeutils"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
@@ -101,17 +100,4 @@ type ResetPasswordRequest struct {
 
 type ConfirmEmailRequest struct {
 	ConfirmationKey string
-}
-
-func MarshallAccount(accountMessage *pb.AccountMessage) (*Account, error) {
-	a := Account{
-		FirstName: accountMessage.FirstName,
-		LastName:  accountMessage.LastName,
-	}
-	id, err := uuid.FromBytes(accountMessage.Id)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to convert byte[] to uuid")
-	}
-	a.ID = id
-	return &a, nil
 }

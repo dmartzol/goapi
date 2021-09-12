@@ -12,8 +12,8 @@ message Model {
 }
 
 service Accounts {
-    rpc AddAccount (AddAccountMessage) returns (AccountMessage) {}
-    rpc Account (AccountID) returns (AccountMessage) {}
+    rpc AddAccount (AddAccountMessage) returns (Account) {}
+    rpc FetchAccount (AccountID) returns (Account) {}
 }
 
 message AccountID {
@@ -29,7 +29,7 @@ message AddAccountMessage {
     string email = 6;
 }
 
-message AccountMessage {
+message Account {
     bytes id = 1;
     google.protobuf.Timestamp created_time = 2;
     google.protobuf.Timestamp updated_time = 3;
