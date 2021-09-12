@@ -1,50 +1,59 @@
-// This is custom goose binary with sqlite3 support only.
-
 package main
 
 import (
-	"flag"
+	"database/sql"
+	"fmt"
 	"log"
 	"os"
+	"time"
 
-	"github.com/pressly/goose"
+	"github.com/golang-migrate/migrate/v4"
+
+	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 
 	_ "github.com/jmoiron/sqlx"
-)
-
-var (
-	flags = flag.NewFlagSet("goose", flag.ExitOnError)
-	dir   = flags.String("dir", ".", "directory with migration files")
+	_ "github.com/lib/pq"
 )
 
 func main() {
-	flags.Parse(os.Args[1:])
-	args := flags.Args()
+	dbname := os.Getenv("PGDATABASE")
+	dbusername := os.Getenv("PGUSER")
+	dbpassword := os.Getenv("POSTGRES_PASSWORD")
+	dbhostname := os.Getenv("PGHOST")
 
-	if len(args) < 2 {
-		flags.Usage()
-		return
+	dbURL := fmt.Sprintf("postgres://%s:5432/%s?user=%s&password=%s&sslmode=disable", dbhostname, dbname, dbusername, dbpassword)
+	fmt.Println("Waiting for:", dbusername+"@tcp("+dbhostname+":)/"+dbname)
+
+	var db *sql.DB
+	for {
+		db, err := sql.Open("postgres", dbURL)
+		if err != nil {
+			log.Fatalf("failed to open DB: %+v", err)
+		}
+
+		err = db.Ping()
+		if err == nil {
+			break
+		}
+
+		time.Sleep(1 * time.Second)
 	}
-
-	dbstring, command := args[1], args[2]
-
-	db, err := goose.OpenDBWithDriver("postgres", dbstring)
+	driver, err := postgres.WithInstance(db, &postgres.Config{})
 	if err != nil {
-		log.Fatalf("goose: failed to open DB: %v\n", err)
+		log.Fatalf("failed to create driver: %+v", err)
+	}
+	m, err := migrate.NewWithDatabaseInstance("file://migrations", "postgres", driver)
+	if err != nil {
+		log.Fatalf("failed to create migrate instance: %+v", err)
+	}
+	if err := m.Up(); err != nil {
+		log.Fatal(err)
 	}
 
 	defer func() {
 		if err := db.Close(); err != nil {
-			log.Fatalf("goose: failed to close DB: %v\n", err)
+			log.Fatalf("failed to close DB: %v\n", err)
 		}
 	}()
-
-	arguments := []string{}
-	if len(args) > 3 {
-		arguments = append(arguments, args[3:]...)
-	}
-
-	if err := goose.Run(command, db, *dir, arguments...); err != nil {
-		log.Fatalf("goose %v: %v", command, err)
-	}
 }

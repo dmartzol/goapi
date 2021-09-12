@@ -1,8 +1,10 @@
 POSTGRES_USER := user-development
 DB_NAME := test-db
 POSTGRES_PASSWORD := secret
-POSTGRESQL_URL := postgres://localhost:5432/$(DB_NAME)?user=$(POSTGRES_USER)&password=$(POSTGRES_PASSWORD)&sslmode=disable
-MIGRATIONS_PATH := internal/storage/pkg/postgres/sql
+POSTGRES_HOST := localhost
+POSTGRES_PORT := 5432
+POSTGRESQL_URL := postgres://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(DB_NAME)?user=$(POSTGRES_USER)&password=$(POSTGRES_PASSWORD)&sslmode=disable
+MIGRATIONS_PATH := migrations
 
 # Colorful output
 color_off = \033[0m
@@ -48,31 +50,42 @@ test:
 	$(call log_success,All tests succeeded)
 
 create:
-	docker create --name postgres13 -p 5432:5432 -e POSTGRES_USER=$(POSTGRES_USER) -e POSTGRES_PASSWORD=secret -e PGPASSWORD=$(POSTGRES_PASSWORD) postgres:13.3
+	docker create --name postgres13 \
+		-p $(POSTGRES_PORT):$(POSTGRES_PORT) \
+		-e POSTGRES_USER=$(POSTGRES_USER) \
+		-e POSTGRES_PASSWORD=secret \
+		-e PGPASSWORD=$(POSTGRES_PASSWORD) \
+		postgres:13.3
 
 start:
 	docker start postgres13
 
-stop:
-	docker stop postgres13
-
-remove:
-	docker rm postgres13
-
-createdb:
-	docker exec -it postgres13 createdb --username=$(POSTGRES_USER) --owner=$(POSTGRES_USER) $(DB_NAME)
-
-dropdb:
-	docker exec -it postgres13 dropdb --username=$(POSTGRES_USER) $(DB_NAME)
-
 sleep:
 	sleep 10
+
+createdb:
+	docker exec \
+		-it postgres13 createdb \
+		--username=$(POSTGRES_USER) \
+		--owner=$(POSTGRES_USER) $(DB_NAME)
 
 migrate_up:
 	migrate -path $(MIGRATIONS_PATH) -database="$(POSTGRESQL_URL)" -verbose up
 
 migrate_down:
 	migrate -path $(MIGRATIONS_PATH) -database="$(POSTGRESQL_URL)" -verbose down 1
+
+stop:
+	docker stop postgres13
+
+remove:
+	docker rm postgres13
+	$(call log_success,succeeded!)
+
+workflow: create start sleep createdb migrate_up migrate_down dropdb stop remove
+
+dropdb:
+	docker exec -it postgres13 dropdb --username=$(POSTGRES_USER) $(DB_NAME)
 
 e2e:
 	$(call log_info,Starting test environment:)
@@ -82,11 +95,13 @@ e2e:
 	docker compose down 
 
 proto:
-	protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative internal/protos/account.proto
+	protoc \
+		--go_out=. \
+		--go_opt=paths=source_relative \
+		--go-grpc_out=. \
+		--go-grpc_opt=paths=source_relative internal/protos/account.proto
 
 test/ci: test go-mod-tidy
-
-workflow: create start sleep createdb sleep migrate_up migrate_down dropdb stop remove
 
 test/all: test go-mod-tidy lint e2e
 
