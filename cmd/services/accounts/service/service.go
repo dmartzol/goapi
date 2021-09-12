@@ -21,7 +21,7 @@ func New(dbname, dbusername, dbhostname string, humanReadableLogs bool) (*accoun
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create db client")
 	}
-	storageClient := storage.NewStorage(dbClient)
+	storageClient := storage.New(dbClient)
 	logger, err := logger.New(humanReadableLogs)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create logger")
