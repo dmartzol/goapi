@@ -9,14 +9,24 @@ import (
 
 // GoapiAccount converts a proto account struct to goapi.Account
 func GoapiAccount(account *Account) (*goapi.Account, error) {
-	a := goapi.Account{
+	new := goapi.Account{
+		Model:     &goapi.Model{},
 		FirstName: account.FirstName,
 		LastName:  account.LastName,
+		Email:     account.Email,
 	}
-	id, err := uuid.FromBytes(account.Id)
+
+	new.CreatedTime = account.CreatedTime.AsTime()
+	if account.UpdatedTime != nil {
+		t := account.UpdatedTime.AsTime()
+		new.UpdatedTime = &t
+	}
+
+	id, err := uuid.Parse(account.Id)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to convert byte[] to uuid")
 	}
-	a.ID = id
-	return &a, nil
+	new.ID = id
+
+	return &new, nil
 }
