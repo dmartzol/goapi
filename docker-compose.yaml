@@ -89,5 +89,24 @@ services:
     links:
       - database
 
+  migrate-job:
+    container_name: migrate
+    restart: "no"
+    build:
+      context: .
+      dockerfile: ./cmd/jobs/migrate/Dockerfile
+      args:
+        project: migrate
+        project_path: ./cmd/jobs
+    command: ./migrate
+    environment:
+      PGUSER: user-development
+      PGDATABASE: development
+      PGHOST: database
+    depends_on:
+      - database
+    links:
+      - database
+
 volumes:
   postgres_volume:

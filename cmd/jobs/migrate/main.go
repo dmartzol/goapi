@@ -25,13 +25,12 @@ func main() {
 	dbURL := fmt.Sprintf("postgres://%s:5432/%s?user=%s&password=%s&sslmode=disable", dbhostname, dbname, dbusername, dbpassword)
 	fmt.Println("Waiting for:", dbusername+"@tcp("+dbhostname+":)/"+dbname)
 
-	var db *sql.DB
-	for {
-		db, err := sql.Open("postgres", dbURL)
-		if err != nil {
-			log.Fatalf("failed to open DB: %+v", err)
-		}
+	db, err := sql.Open("postgres", dbURL)
+	if err != nil {
+		log.Fatalf("failed to open DB: %+v", err)
+	}
 
+	for {
 		err = db.Ping()
 		if err == nil {
 			break
@@ -47,6 +46,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to create migrate instance: %+v", err)
 	}
+	fmt.Print("running migrations")
 	if err := m.Up(); err != nil {
 		log.Fatal(err)
 	}

@@ -12,7 +12,7 @@ import (
 
 func main() {
 	var (
-		structuredLogging = flag.Bool("d", true, "")
+		structuredLogging = flag.Bool("sL", false, "structured logging")
 		dbhostname        = flag.String("dbhostname", "database", "")
 		dbusername        = flag.String("dbusername", "user-development", "")
 		dbname            = flag.String("dbname", "database", "")

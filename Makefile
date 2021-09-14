@@ -1,9 +1,9 @@
-POSTGRES_USER := user-development
-DB_NAME := e2e-db
-POSTGRES_PASSWORD := secret
 POSTGRES_HOST := localhost
 POSTGRES_PORT := 5432
-POSTGRESQL_URL := postgres://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(DB_NAME)?user=$(POSTGRES_USER)&password=$(POSTGRES_PASSWORD)&sslmode=disable
+DB_NAME := e2e-db
+POSTGRES_USER := user-development
+POSTGRES_PASSWORD := secret
+POSTGRESQL_URL := postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(DB_NAME)?user=$(POSTGRES_USER)&password=$(POSTGRES_PASSWORD)&sslmode=disable
 MIGRATIONS_PATH := migrations
 
 # Colorful output
@@ -50,10 +50,10 @@ test:
 	$(call log_success,All tests succeeded)
 
 migrate_up:
-	migrate -path $(MIGRATIONS_PATH) -database="$(POSTGRESQL_URL)" -verbose up
+	migrate -path="$(MIGRATIONS_PATH)" -database="$(POSTGRESQL_URL)" -verbose up
 
 migrate_down:
-	migrate -path $(MIGRATIONS_PATH) -database="$(POSTGRESQL_URL)" -verbose down 1
+	migrate -path="$(MIGRATIONS_PATH)" -database="$(POSTGRESQL_URL)" -verbose down
 
 up.e2e:
 	docker compose --file docker-compose.e2e.yaml up \
@@ -68,14 +68,7 @@ down.e2e:
 test.e2e:
 	go test -tags=e2e ./... -v
 
-e2e.workflow: up.e2e migrate_up test.e2e migrate_down down.e2e
-
-e2e:
-	$(call log_info,Starting test environment:)
-	go test -tags=e2e ./... -v
-	docker compose up -d
-	TEST_INTEGRATION=TRUE go test ./... -v 
-	docker compose down 
+e2e: proto up.e2e migrate_up test.e2e migrate_down down.e2e
 
 proto:
 	protoc \
@@ -93,5 +86,3 @@ swagger-validate:
 
 swagger-serve:
 	swagger serve ./api/swagger.yml
-
--include ./tests/e2e/e2e.mk

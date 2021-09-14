@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/dghubble/sling"
-	"github.com/dmartzol/api-template/internal/api"
+	"github.com/dmartzol/goapi/internal/api"
 )
 
 func TestCreateAccount(t *testing.T) {

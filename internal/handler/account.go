@@ -24,20 +24,21 @@ func (h *Handler) createAccount(w http.ResponseWriter, r *http.Request) {
 		httputils.RespondJSONError(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
-	addAccountReq := pb.AddAccountMessage{
+	addAccountMessage := pb.AddAccountMessage{
 		FirstName: req.FirstName,
 		LastName:  req.LastName,
+		Email:     req.Email,
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	aM, err := h.Accounts.AddAccount(ctx, &addAccountReq)
+	pbAccount, err := h.Accounts.AddAccount(ctx, &addAccountMessage)
 	if err != nil {
 		h.Errorw("failed to create account", "error", err)
 		httputils.RespondJSONError(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
-	h.Debugf("aM: %v", aM)
-	a, err := proto.GoapiAccount(aM)
+	h.Debugf("pbAccount: %v", pbAccount)
+	a, err := proto.CoreAccount(pbAccount)
 	if err != nil {
 		h.Errorw("failed to marshall account", "error", err)
 		httputils.RespondJSONError(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

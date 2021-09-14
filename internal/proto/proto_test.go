@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGoapiAccount(t *testing.T) {
+func TestCoreAccount(t *testing.T) {
 	testCases := []struct {
 		description    string
 		pbAccount      Account
@@ -32,7 +32,7 @@ func TestGoapiAccount(t *testing.T) {
 	for _, tt := range testCases {
 		t.Run(tt.description, func(t *testing.T) {
 			expected := tt.expectedResult
-			actual, err := GoapiAccount(&tt.pbAccount)
+			actual, err := CoreAccount(&tt.pbAccount)
 			assert.Nil(t, err)
 			assert.Equal(t, actual.FirstName, expected.FirstName)
 			assert.Equal(t, actual.LastName, expected.LastName)

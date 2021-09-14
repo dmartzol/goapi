@@ -7,8 +7,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-// GoapiAccount converts a proto account struct to goapi.Account
-func GoapiAccount(account *Account) (*goapi.Account, error) {
+// CoreAccount converts a proto account struct to goapi.Account
+func CoreAccount(account *Account) (*goapi.Account, error) {
 	new := goapi.Account{
 		Model:     &goapi.Model{},
 		FirstName: account.FirstName,
@@ -29,4 +29,25 @@ func GoapiAccount(account *Account) (*goapi.Account, error) {
 	new.ID = id
 
 	return &new, nil
+}
+
+func AccountProto(account *goapi.Account) (*Account, error) {
+	new := Account{
+		Id:        account.ID.String(),
+		FirstName: account.FirstName,
+		LastName:  account.LastName,
+		Email:     account.Email,
+	}
+
+	return &new, nil
+}
+
+// ToCoreAccount converts AddAccountMessage to goapim.Account
+func (a *AddAccountMessage) ToCoreAccount() *goapi.Account {
+	res := goapi.Account{
+		FirstName: a.FirstName,
+		LastName:  a.LastName,
+		Email:     a.Email,
+	}
+	return &res
 }

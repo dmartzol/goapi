@@ -33,34 +33,9 @@ services:
     command: ./gateway
     environment:
       VERBOSE: "true"
-      PGUSER: user-development
-      PGDATABASE: development
-      PGHOST: database
     depends_on:
       - database
       - accounts
-    links:
-      - database
-
-  sessions:
-    container_name: sessions
-    restart: "no"
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        project: sessions
-        project_path: ./cmd/services
-    ports:
-      - 1200:1200
-    command: ./sessions
-    environment:
-      VERBOSE: "true"
-      PGUSER: user-development
-      PGDATABASE: development
-      PGHOST: database
-    depends_on:
-      - database
     links:
       - database
 
@@ -80,7 +55,29 @@ services:
     environment:
       VERBOSE: "true"
       PGUSER: user-development
-      PGDATABASE: development
+      PGDATABASE: e2e-db
+      PGHOST: database
+    depends_on:
+      - database
+    links:
+      - database
+
+  sessions:
+    container_name: sessions
+    restart: "no"
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        project: sessions
+        project_path: ./cmd/services
+    ports:
+      - 1200:1200
+    command: ./sessions
+    environment:
+      VERBOSE: "true"
+      PGUSER: user-development
+      PGDATABASE: e2e-db
       PGHOST: database
     depends_on:
       - database

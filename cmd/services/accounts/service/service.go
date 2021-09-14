@@ -3,7 +3,6 @@ package accountservice
 import (
 	"context"
 
-	"github.com/dmartzol/goapi/goapi"
 	"github.com/dmartzol/goapi/internal/logger"
 	pb "github.com/dmartzol/goapi/internal/proto"
 	"github.com/dmartzol/goapi/internal/storage"
@@ -16,13 +15,13 @@ const (
 	Port = "50051"
 )
 
-func New(dbname, dbusername, dbhostname string, humanReadableLogs bool) (*accountService, error) {
+func New(dbname, dbusername, dbhostname string, structuredLogging bool) (*accountService, error) {
 	dbClient, err := postgres.NewDBClient(dbname, dbusername, dbhostname)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create db client")
 	}
 	storageClient := storage.New(dbClient)
-	logger, err := logger.New(humanReadableLogs)
+	logger, err := logger.New(structuredLogging)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create logger")
 	}
@@ -48,19 +47,17 @@ func (s *accountService) Account(ctx context.Context, accountID *pb.AccountID) (
 	return nil, errors.Errorf("not implemented")
 }
 
-func (s *accountService) AddAccount(ctx context.Context, addMessage *pb.AddAccountMessage) (*pb.Account, error) {
-	accountInsert := &goapi.Account{
-		FirstName: addMessage.FirstName,
-		LastName:  addMessage.LastName,
-	}
-	newAccount, err := s.Storage.AddAccount(accountInsert)
+func (s *accountService) AddAccount(ctx context.Context, addAccountMessage *pb.AddAccountMessage) (*pb.Account, error) {
+	newAccount := addAccountMessage.ToCoreAccount()
+	newAccount, err := s.Storage.AddAccount(newAccount)
 	if err != nil {
 		s.Errorw("failed to add acount", "error", err)
 		return nil, errors.Wrap(err, "failed to add account")
 	}
-	accountMessage := pb.Account{
-		FirstName: newAccount.FirstName,
-		LastName:  newAccount.LastName,
+	pbAccount, err := pb.AccountProto(newAccount)
+	if err != nil {
+		s.Errorw("failed to convert acount", "error", err)
+		return nil, errors.Wrap(err, "failed to convert account")
 	}
-	return &accountMessage, nil
+	return pbAccount, nil
 }
