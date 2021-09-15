@@ -26,7 +26,6 @@ type Handler struct {
 func New(ac pb.AccountsClient, logger *zap.SugaredLogger, verbose bool) (*Handler, error) {
 	h := Handler{
 		Accounts:      ac,
-		Router:        mux.NewRouter(),
 		SugaredLogger: logger,
 		Verbose:       verbose,
 	}
@@ -35,9 +34,11 @@ func New(ac pb.AccountsClient, logger *zap.SugaredLogger, verbose bool) (*Handle
 }
 
 func (h *Handler) InitializeRoutes() {
-	h.Router = h.Router.PathPrefix("/v1").Subrouter()
+	r := mux.NewRouter()
+	h.Router = r.PathPrefix("/v1").Subrouter()
 
 	h.Router.Use(
+		middleware.Logger,
 		middleware.Recoverer,
 		h.AuthMiddleware,
 	)
