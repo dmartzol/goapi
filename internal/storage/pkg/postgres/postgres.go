@@ -2,19 +2,12 @@ package postgres
 
 import (
 	"fmt"
+	"strings"
+	"time"
 
-	"github.com/dmartzol/goapi/pkg/environment"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"github.com/pkg/errors"
-)
-
-const (
-	dbport   = "DBPORT"
-	dbuser   = "PGUSER"
-	dbpass   = "PGPASSWORD"
-	hostname = "PGHOST"
-	dbname   = "PGDATABASE"
 )
 
 // DB represents the database
@@ -22,29 +15,31 @@ type DB struct {
 	Client *sqlx.DB
 }
 
-type DatabaseConfig struct {
+type Config struct {
 	Name, User, Password, Host string
 	Port                       int
 }
 
-func NewDBClient(dbname, username, hostname string) (*DB, error) {
-	dbConfig := DatabaseConfig{
-		Port:     environment.GetEnvInt(dbport, 5432),
-		Password: environment.GetEnvString(dbpass, ""),
-		Host:     hostname,
-		User:     username,
-		Name:     dbname,
-	}
-
+func new(config Config) (*DB, error) {
 	dataSourceName := "host=%s port=%d user=%s password=%s dbname=%s sslmode=disable"
-	dataSourceName = fmt.Sprintf(dataSourceName, dbConfig.Host, dbConfig.Port, dbConfig.User, dbConfig.Password, dbConfig.Name)
+	dataSourceName = fmt.Sprintf(dataSourceName, config.Host, config.Port, config.User, config.Password, config.Name)
 	database, err := sqlx.Connect("postgres", dataSourceName)
 	if err != nil {
 		return nil, errors.Wrap(err, "error connecting to database")
 	}
-	err = database.Ping()
-	if err != nil {
-		return nil, errors.Wrap(err, "error pinging database")
-	}
 	return &DB{database}, nil
+}
+
+func NewWithWaitLoop(config Config) (*DB, error) {
+	for {
+		db, err := new(config)
+		if err != nil {
+			if strings.Contains(err.Error(), "connection refused") {
+				time.Sleep(time.Second * 1)
+				continue
+			}
+			return nil, errors.Wrap(err, "error connecting to database")
+		}
+		return db, nil
+	}
 }

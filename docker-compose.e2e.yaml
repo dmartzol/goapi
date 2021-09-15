@@ -11,7 +11,7 @@ services:
   database:
     container_name: postgres
     image: postgres:13.3
-    restart: on-failure
+    restart: always
     environment:
       POSTGRES_USER: user-development
       POSTGRES_HOST_AUTH_METHOD: trust
@@ -21,7 +21,7 @@ services:
 
   gateway:
     container_name: gateway
-    restart: "no"
+    restart: always
     build:
       context: .
       dockerfile: Dockerfile
@@ -41,7 +41,7 @@ services:
 
   accounts:
     container_name: accounts
-    restart: "no"
+    restart: always
     build:
       context: .
       dockerfile: Dockerfile
@@ -54,7 +54,12 @@ services:
     command: ./accounts
     environment:
       VERBOSE: "true"
-      PGUSER: user-development
+      GOAPI_STRUCTURED_LOGGING: "false"
+      GOAPI_DATABASE_NAME: e2e-db
+      GOAPI_DATABASE_HOSTNAME: database
+      GOAPI_DATABASE_USERNAME: user-development
+      GOAPI_DATABASE_PASSWORD: secret
+      GOAPI_DATABASE_PORT: 5432
       PGDATABASE: e2e-db
       PGHOST: database
     depends_on:
@@ -64,7 +69,7 @@ services:
 
   sessions:
     container_name: sessions
-    restart: "no"
+    restart: always
     build:
       context: .
       dockerfile: Dockerfile

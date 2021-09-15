@@ -1,32 +1,27 @@
 package main
 
 import (
-	"flag"
 	"log"
 	"net"
 
 	accountservice "github.com/dmartzol/goapi/cmd/services/accounts/service"
 	pb "github.com/dmartzol/goapi/internal/proto"
+	"github.com/kelseyhightower/envconfig"
 	"google.golang.org/grpc"
 )
 
 func main() {
-	var (
-		structuredLogging = flag.Bool("sL", false, "structured logging")
-		dbhostname        = flag.String("dbhostname", "database", "")
-		dbusername        = flag.String("dbusername", "user-development", "")
-		dbname            = flag.String("dbname", "database", "")
-	)
-	flag.Parse()
-	aS, err := accountservice.New(
-		*dbname,
-		*dbusername,
-		*dbhostname,
-		*structuredLogging,
-	)
+	var config accountservice.Config
+	err := envconfig.Process("goapi", &config)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	aS, err := accountservice.New(config)
 	if err != nil {
 		log.Fatalf("failed to create accounts service: %+v", err)
 	}
+
 	s := grpc.NewServer()
 	pb.RegisterAccountsServer(s, aS)
 	lis, err := net.Listen("tcp", ":"+accountservice.Port)

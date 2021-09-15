@@ -49,33 +49,36 @@ test:
 	go test -race -v ./... -cover
 	$(call log_success,All tests succeeded)
 
-migrate_up:
-	migrate -path="$(MIGRATIONS_PATH)" -database="$(POSTGRESQL_URL)" -verbose up
-
-migrate_down:
-	migrate -path="$(MIGRATIONS_PATH)" -database="$(POSTGRESQL_URL)" -verbose down
-
-up.e2e:
-	docker compose --file docker-compose.e2e.yaml up \
-					--remove-orphans \
-					--build \
-					--detach
-
-down.e2e:
-	docker compose --file docker-compose.e2e.yaml down
-	$(call log_success,succeeded!)
-
-test.e2e:
-	go test -tags=e2e ./... -v
-
-e2e: proto up.e2e migrate_up test.e2e migrate_down down.e2e
-
 proto:
 	protoc \
 		--go_out=. \
 		--go_opt=paths=source_relative \
 		--go-grpc_out=. \
 		--go-grpc_opt=paths=source_relative internal/proto/goapi.proto
+
+build:
+	go build ./...
+
+e2e.up:
+	docker compose --file docker-compose.e2e.yaml up \
+					--remove-orphans \
+					--build \
+					--detach
+
+e2e.down:
+	docker compose --file docker-compose.e2e.yaml down
+	$(call log_success,succeeded!)
+
+e2e.migrate.up:
+	migrate -path="$(MIGRATIONS_PATH)" -database="$(POSTGRESQL_URL)" -verbose up
+
+e2e.migrate.down:
+	migrate -path="$(MIGRATIONS_PATH)" -database="$(POSTGRESQL_URL)" -verbose down
+
+e2e.test:
+	go test -tags=e2e ./... -v
+
+e2e: proto build e2e.up e2e.migrate.up e2e.test e2e.migrate.down e2e.down
 
 test/ci: test go-mod-tidy
 

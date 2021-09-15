@@ -15,27 +15,50 @@ const (
 	Port = "50051"
 )
 
-func New(dbname, dbusername, dbhostname string, structuredLogging bool) (*accountService, error) {
-	dbClient, err := postgres.NewDBClient(dbname, dbusername, dbhostname)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to create db client")
-	}
-	storageClient := storage.New(dbClient)
-	logger, err := logger.New(structuredLogging)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to create logger")
-	}
-	a := accountService{
-		Storage:       storageClient,
-		SugaredLogger: logger,
-	}
-	return &a, nil
+type Config struct {
+	StructuredLogging bool   `default:"true" split_words:"true"`
+	DatabaseHostname  string `split_words:"true"`
+	DatabaseName      string `split_words:"true"`
+	DatabaseUsername  string `split_words:"true"`
+	DatabasePassword  string `split_words:"true"`
+	DatabasePort      int    `split_words:"true"`
 }
 
 type accountService struct {
 	pb.UnimplementedAccountsServer
 	*storage.Storage
 	*zap.SugaredLogger
+}
+
+func New(config Config) (*accountService, error) {
+	logger, err := logger.New(config.StructuredLogging)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create logger")
+	}
+
+	logger.Infof("structured logging: %t", config.StructuredLogging)
+	logger.Infof("database hostname: %s", config.DatabaseHostname)
+	logger.Infof("database name: %s", config.DatabaseName)
+	logger.Infof("database username: %s", config.DatabaseUsername)
+
+	dbConfig := postgres.Config{
+		Host:     config.DatabaseHostname,
+		Name:     config.DatabaseName,
+		User:     config.DatabaseUsername,
+		Password: config.DatabasePassword,
+		Port:     config.DatabasePort,
+	}
+	dbClient, err := postgres.NewWithWaitLoop(dbConfig)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create db client")
+	}
+
+	a := accountService{
+		Storage:       storage.New(dbClient),
+		SugaredLogger: logger,
+	}
+
+	return &a, nil
 }
 
 func (s *accountService) Run() error {
