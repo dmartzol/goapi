@@ -1,12 +1,9 @@
 package handler
 
 import (
-	"net/http"
-
 	pb "github.com/dmartzol/goapi/internal/proto"
 	"github.com/go-chi/chi/middleware"
 	"github.com/gorilla/mux"
-	"github.com/rs/cors"
 	"go.uber.org/zap"
 )
 
@@ -53,16 +50,4 @@ func (h *Handler) InitializeRoutes() {
 	h.Router.HandleFunc("/sessions", h.CreateSession).Methods("POST")
 	h.Router.HandleFunc("/sessions", h.GetSession).Methods("GET")
 	h.Router.HandleFunc("/sessions", h.ExpireSession).Methods("DELETE")
-}
-
-func (h *Handler) Run(addr string) error {
-	h.Infof("listening and serving on %s", addr)
-	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000"},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
-		AllowCredentials: true,
-		// Enable Debugging for testing, consider disabling in production
-		// Debug: true,
-	})
-	return http.ListenAndServe(addr, c.Handler(h.Router))
 }

@@ -1,18 +1,32 @@
 package main
 
 import (
-	"log"
+	"os"
 
-	gatewayservice "github.com/dmartzol/goapi/cmd/services/gateway/service"
+	"github.com/dmartzol/goapi/internal/service"
+	"github.com/urfave/cli"
 )
 
 func main() {
-	structuredLogging := false
-	verbose := true
-
-	g, err := gatewayservice.New(structuredLogging, verbose)
-	if err != nil {
-		log.Fatalf("failed to create gateway: %v", err)
+	app := &cli.App{
+		Name: "gateway",
+		Flags: []cli.Flag{
+			&cli.BoolTFlag{
+				Name:   "structuredLogin",
+				EnvVar: "STRUCTURED_LOGIN",
+			},
+			&cli.StringFlag{
+				Name:   "hostname",
+				EnvVar: "HOSTNAME",
+				Value:  "localhost",
+			},
+			&cli.StringFlag{
+				Name:   "port",
+				EnvVar: "PORT",
+				Value:  "1100",
+			},
+		},
+		Action: service.NewGatewayServiceRun,
 	}
-	log.Fatal(g.Run("0.0.0.0:1100"))
+	app.Run(os.Args)
 }
