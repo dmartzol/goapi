@@ -5,10 +5,9 @@ import (
 	"net/http"
 	"strings"
 
-	accountservice "github.com/dmartzol/goapi/cmd/services/accounts/service"
 	"github.com/dmartzol/goapi/internal/handler"
 	"github.com/dmartzol/goapi/internal/logger"
-	pb "github.com/dmartzol/goapi/internal/proto"
+	"github.com/dmartzol/goapi/internal/proto"
 	"github.com/pkg/errors"
 	"github.com/rs/cors"
 	"github.com/urfave/cli"
@@ -19,7 +18,7 @@ const (
 	accountsHost = "accounts"
 )
 
-type Config struct {
+type GatewayConfig struct {
 	StructuredLogging bool
 	Verbose           bool
 }
@@ -29,20 +28,23 @@ func NewGatewayServiceRun(c *cli.Context) error {
 	verbose := c.Bool("verbose")
 	hostname := c.String("hostname")
 	port := c.String("port")
+	accountsServiceHost := c.String("accountsServiceHostname")
+	accountsServicePort := c.String("accountsServicePort")
 
 	logger, err := logger.New(structuredLogging)
 	if err != nil {
 		return errors.Wrap(err, "failed to create logger")
 	}
-	accountsAddres := accountsHost + ":" + accountservice.Port
+
+	accountsAddres := accountsServiceHost + ":" + accountsServicePort
 	opts := []grpc.DialOption{grpc.WithInsecure()}
 	conn, err := grpc.Dial(accountsAddres, opts...)
 	if err != nil {
 		return errors.Wrap(err, "failed to create connection")
 	}
 	defer conn.Close()
+	accountsClient := proto.NewAccountsClient(conn)
 
-	accountsClient := pb.NewAccountsClient(conn)
 	handler, err := handler.New(accountsClient, logger, verbose)
 	if err != nil {
 		log.Panicf("error creating handler: %v", err)

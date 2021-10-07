@@ -25,6 +25,16 @@ func main() {
 				EnvVar: "PORT",
 				Value:  "1100",
 			},
+			&cli.StringFlag{
+				Name:   "accountsServiceHostname",
+				EnvVar: "ACCOUNTS_SERVICE_HOSTNAME",
+				Value:  "accounts",
+			},
+			&cli.StringFlag{
+				Name:   "accountsServicePort",
+				EnvVar: "ACCOUNTS_SERVICE_PORT",
+				Value:  "50051",
+			},
 		},
 		Action: service.NewGatewayServiceRun,
 	}

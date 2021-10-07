@@ -4,31 +4,31 @@ import (
 	"log"
 	"net"
 
-	accountservice "github.com/dmartzol/goapi/cmd/services/accounts/service"
-	pb "github.com/dmartzol/goapi/internal/proto"
+	"github.com/dmartzol/goapi/internal/proto"
+	"github.com/dmartzol/goapi/internal/service"
 	"github.com/kelseyhightower/envconfig"
 	"google.golang.org/grpc"
 )
 
 func main() {
-	var config accountservice.Config
+	var config service.AccountsServiceConfig
 	err := envconfig.Process("goapi", &config)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	aS, err := accountservice.New(config)
+	aS, err := service.NewAccountsService(config)
 	if err != nil {
 		log.Fatalf("failed to create accounts service: %+v", err)
 	}
 
 	s := grpc.NewServer()
-	pb.RegisterAccountsServer(s, aS)
-	lis, err := net.Listen("tcp", ":"+accountservice.Port)
+	proto.RegisterAccountsServer(s, aS)
+	lis, err := net.Listen("tcp", ":"+service.Port)
 	if err != nil {
 		aS.Fatalf("failed to listen: %v", err)
 	}
-	aS.Infow("listening and serving", "host", "0.0.0.0", "port", accountservice.Port)
+	aS.Infow("listening and serving", "host", "0.0.0.0", "port", service.Port)
 	if err := s.Serve(lis); err != nil {
 		aS.Fatalf("failed to serve: %+v", err)
 	}

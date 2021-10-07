@@ -35,9 +35,6 @@ services:
     command: ./gateway
     environment:
       VERBOSE: "true"
-      PGUSER: user-development
-      PGDATABASE: development
-      PGHOST: database
     depends_on:
       - database
       - accounts

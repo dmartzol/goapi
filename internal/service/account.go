@@ -1,10 +1,10 @@
-package accountservice
+package service
 
 import (
 	"context"
 
 	"github.com/dmartzol/goapi/internal/logger"
-	pb "github.com/dmartzol/goapi/internal/proto"
+	"github.com/dmartzol/goapi/internal/proto"
 	"github.com/dmartzol/goapi/internal/storage"
 	"github.com/dmartzol/goapi/internal/storage/pkg/postgres"
 	"github.com/pkg/errors"
@@ -15,22 +15,22 @@ const (
 	Port = "50051"
 )
 
-type Config struct {
-	StructuredLogging bool   `default:"true" split_words:"true"`
-	DatabaseHostname  string `split_words:"true"`
-	DatabaseName      string `split_words:"true"`
-	DatabaseUsername  string `split_words:"true"`
-	DatabasePassword  string `split_words:"true"`
-	DatabasePort      int    `split_words:"true"`
-}
-
 type accountService struct {
-	pb.UnimplementedAccountsServer
+	proto.UnimplementedAccountsServer
 	*storage.Storage
 	*zap.SugaredLogger
 }
 
-func New(config Config) (*accountService, error) {
+type AccountsServiceConfig struct {
+	StructuredLogging bool
+	DatabaseHostname  string
+	DatabaseName      string
+	DatabaseUsername  string
+	DatabasePassword  string
+	DatabasePort      int
+}
+
+func NewAccountsService(config AccountsServiceConfig) (*accountService, error) {
 	logger, err := logger.New(config.StructuredLogging)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create logger")
@@ -65,19 +65,19 @@ func (s *accountService) Run() error {
 	return nil
 }
 
-func (s *accountService) Account(ctx context.Context, accountID *pb.AccountID) (*pb.Account, error) {
-	s.Errorw("not implemented", "function", "Account(ctx context.Context, accountID *pb.AccountID)")
+func (s *accountService) Account(ctx context.Context, accountID *proto.AccountID) (*proto.Account, error) {
+	s.Errorw("not implemented", "function", "Account(ctx context.Context, accountID *proto.AccountID)")
 	return nil, errors.Errorf("not implemented")
 }
 
-func (s *accountService) AddAccount(ctx context.Context, addAccountMessage *pb.AddAccountMessage) (*pb.Account, error) {
+func (s *accountService) AddAccount(ctx context.Context, addAccountMessage *proto.AddAccountMessage) (*proto.Account, error) {
 	newAccount := addAccountMessage.ToCoreAccount()
 	newAccount, err := s.Storage.AddAccount(newAccount)
 	if err != nil {
 		s.Errorw("failed to add acount", "error", err)
 		return nil, errors.Wrap(err, "failed to add account")
 	}
-	pbAccount, err := pb.AccountProto(newAccount)
+	pbAccount, err := proto.AccountProto(newAccount)
 	if err != nil {
 		s.Errorw("failed to convert acount", "error", err)
 		return nil, errors.Wrap(err, "failed to convert account")
