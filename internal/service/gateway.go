@@ -14,10 +14,6 @@ import (
 	"google.golang.org/grpc"
 )
 
-const (
-	accountsHost = "accounts"
-)
-
 func NewGatewayServiceRun(c *cli.Context) error {
 	structuredLogging := c.Bool("structuredLogging")
 	verbose := c.Bool("verbose")
