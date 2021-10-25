@@ -7,7 +7,6 @@ import (
 
 	"github.com/dmartzol/goapi/internal/api"
 	"github.com/dmartzol/goapi/internal/proto"
-	pb "github.com/dmartzol/goapi/internal/proto"
 	"github.com/dmartzol/goapi/pkg/httputils"
 )
 
@@ -25,7 +24,7 @@ func (h *Handler) createAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	addAccountMessage := pb.AddAccountMessage{
+	addAccountMessage := proto.AddAccountMessage{
 		FirstName: req.FirstName,
 		LastName:  req.LastName,
 		Email:     req.Email,

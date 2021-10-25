@@ -75,6 +75,10 @@ func (r RegisterRequest) Validate() error {
 	if r.Email == "" {
 		return errors.New("email is required")
 	}
+	ok := validEmail(r.Email)
+	if !ok {
+		return errors.New("invalid email")
+	}
 	if len(r.Password) < 6 {
 		return errors.New("password too short")
 	}

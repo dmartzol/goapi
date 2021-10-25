@@ -18,7 +18,7 @@ func (db *DB) SessionFromToken(token string) (*goapi.Session, error) {
 	return &s, err
 }
 
-// CreateSession creates a new session
+// AddSession creates a new session
 func (db *DB) AddSession(session *goapi.Session) (*goapi.Session, error) {
 	if err := session.Validate(); err != nil {
 		return nil, err
