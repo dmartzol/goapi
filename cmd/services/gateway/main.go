@@ -19,7 +19,7 @@ func main() {
 			&cli.StringFlag{
 				Name:   "host",
 				EnvVar: "HOST",
-				Value:  "localhost",
+				Value:  "0.0.0.0",
 			},
 			&cli.StringFlag{
 				Name:   "port",
