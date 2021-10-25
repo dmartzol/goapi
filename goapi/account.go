@@ -4,8 +4,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dmartzol/goapi/internal/api"
 	"github.com/dmartzol/goapi/pkg/timeutils"
-	"github.com/google/uuid"
 	"github.com/pkg/errors"
 )
 
@@ -22,19 +22,10 @@ type Account struct {
 	Email     string
 }
 
-// AccountView is the restricted response body of Account
-// see: https://stackoverflow.com/questions/46427723/golang-elegant-way-to-omit-a-json-property-from-being-serialized
-type AccountView struct {
-	ID                         uuid.UUID `json:"ID"`
-	FirstName, LastName, Email string
-	DOB                        string
-	Gender                     string
-}
-
 // View returns the Account struct restricted to those fields allowed in options
 // see: https://stackoverflow.com/questions/46427723/golang-elegant-way-to-omit-a-json-property-from-being-serialized
-func (a Account) View(options map[string]bool) AccountView {
-	view := AccountView{
+func (a Account) View(options map[string]bool) api.Account {
+	view := api.Account{
 		ID:        a.ID,
 		FirstName: a.FirstName,
 		LastName:  a.LastName,
@@ -47,8 +38,8 @@ func (a Account) View(options map[string]bool) AccountView {
 	return view
 }
 
-func (accs Accounts) Views(options map[string]bool) []AccountView {
-	var l []AccountView
+func (accs Accounts) Views(options map[string]bool) []api.Account {
+	var l []api.Account
 	for _, a := range accs {
 		l = append(l, a.View(options))
 	}
