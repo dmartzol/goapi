@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"os"
 
 	"github.com/dmartzol/goapi/internal/service"
@@ -16,8 +17,8 @@ func main() {
 				EnvVar: "STRUCTURED_LOGIN",
 			},
 			&cli.StringFlag{
-				Name:   "hostname",
-				EnvVar: "HOSTNAME",
+				Name:   "host",
+				EnvVar: "HOST",
 				Value:  "localhost",
 			},
 			&cli.StringFlag{
@@ -38,5 +39,9 @@ func main() {
 		},
 		Action: service.NewGatewayServiceRun,
 	}
-	app.Run(os.Args)
+
+	err := app.Run(os.Args)
+	if err != nil {
+		log.Fatalf("error running app: %s", err)
+	}
 }

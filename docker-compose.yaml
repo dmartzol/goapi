@@ -23,7 +23,7 @@ services:
 
   gateway:
     container_name: gateway
-    restart: always
+    restart: "no"
     build:
       context: .
       dockerfile: Dockerfile
@@ -41,31 +41,9 @@ services:
     links:
       - database
 
-  sessions:
-    container_name: sessions
-    restart: always
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        project: sessions
-        project_path: ./cmd/services
-    ports:
-      - 1200:1200
-    command: ./sessions
-    environment:
-      VERBOSE: "true"
-      PGUSER: user-development
-      PGDATABASE: development
-      PGHOST: database
-    depends_on:
-      - database
-    links:
-      - database
-
   accounts:
     container_name: accounts
-    restart: always
+    restart: "no"
     build:
       context: .
       dockerfile: Dockerfile
@@ -76,6 +54,27 @@ services:
       - 1300:1300
       - 50051:50051
     command: ./accounts
+    environment:
+      VERBOSE: "true"
+      PGUSER: user-development
+      PGNAME: development
+    depends_on:
+      - database
+    links:
+      - database
+
+  sessions:
+    container_name: sessions
+    restart: "no"
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        project: sessions
+        project_path: ./cmd/services
+    ports:
+      - 1200:1200
+    command: ./sessions
     environment:
       VERBOSE: "true"
       PGUSER: user-development

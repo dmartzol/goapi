@@ -33,6 +33,9 @@ up:
 	go mod download
 	docker-compose up --remove-orphans -d --build
 
+down:
+	docker compose -p goapi down
+
 lint:
 	golangci-lint run ./...
 	$(call log_success,Linting with golangci-lint succeeded!)
@@ -76,7 +79,7 @@ e2e.migrate.down:
 	migrate -path="$(MIGRATIONS_PATH)" -database="$(POSTGRESQL_URL)" -verbose down
 
 e2e.test:
-	go test -tags=e2e ./... -v
+	gotest -tags=e2e ./... -v
 
 e2e: proto build e2e.up e2e.migrate.up e2e.test e2e.migrate.down e2e.down
 

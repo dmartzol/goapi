@@ -2,17 +2,16 @@ package service
 
 import (
 	"context"
+	"net"
 
 	"github.com/dmartzol/goapi/internal/logger"
 	"github.com/dmartzol/goapi/internal/proto"
 	"github.com/dmartzol/goapi/internal/storage"
 	"github.com/dmartzol/goapi/internal/storage/pkg/postgres"
 	"github.com/pkg/errors"
+	"github.com/urfave/cli"
 	"go.uber.org/zap"
-)
-
-const (
-	Port = "50051"
+	"google.golang.org/grpc"
 )
 
 type accountService struct {
@@ -30,27 +29,37 @@ type AccountsServiceConfig struct {
 	DatabasePort      int
 }
 
-func NewAccountsService(config AccountsServiceConfig) (*accountService, error) {
-	logger, err := logger.New(config.StructuredLogging)
+func NewAccountsService(c *cli.Context) error {
+	structuredLogging := c.Bool("structuredLogging")
+	port := c.String("port")
+	databaseHostname := c.String("databaseHostname")
+	databaseName := c.String("databaseName")
+	databaseUser := c.String("databaseUser")
+	databasePassword := c.String("databasePassword")
+	databasePort := c.Int("databasePort")
+	hostname := c.String("host")
+
+	logger, err := logger.New(structuredLogging)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to create logger")
+		return errors.Wrap(err, "failed to create logger")
 	}
 
-	logger.Infof("structured logging: %t", config.StructuredLogging)
-	logger.Infof("database hostname: %s", config.DatabaseHostname)
-	logger.Infof("database name: %s", config.DatabaseName)
-	logger.Infof("database username: %s", config.DatabaseUsername)
+	logger.Infof("structured logging: %v", structuredLogging)
+	logger.Infof("hostname: %s", hostname)
+	logger.Infof("database hostname: %s", databaseHostname)
+	logger.Infof("database name: %s", databaseName)
+	logger.Infof("database username: %s", databaseUser)
 
 	dbConfig := postgres.Config{
-		Host:     config.DatabaseHostname,
-		Name:     config.DatabaseName,
-		User:     config.DatabaseUsername,
-		Password: config.DatabasePassword,
-		Port:     config.DatabasePort,
+		Host:     databaseHostname,
+		Name:     databaseName,
+		User:     databaseUser,
+		Password: databasePassword,
+		Port:     databasePort,
 	}
 	dbClient, err := postgres.NewWithWaitLoop(dbConfig)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to create db client")
+		return errors.Wrap(err, "failed to create db client")
 	}
 
 	a := accountService{
@@ -58,11 +67,17 @@ func NewAccountsService(config AccountsServiceConfig) (*accountService, error) {
 		SugaredLogger: logger,
 	}
 
-	return &a, nil
-}
+	s := grpc.NewServer()
+	proto.RegisterAccountsServer(s, a)
 
-func (s *accountService) Run() error {
-	return nil
+	lis, err := net.Listen("tcp", ":"+port)
+	if err != nil {
+		a.Fatalf("failed to listen: %v", err)
+	}
+
+	a.Infow("listening and serving", "host", hostname, "port", port)
+
+	return s.Serve(lis)
 }
 
 func (s *accountService) Account(ctx context.Context, accountID *proto.AccountID) (*proto.Account, error) {
@@ -70,7 +85,7 @@ func (s *accountService) Account(ctx context.Context, accountID *proto.AccountID
 	return nil, errors.Errorf("not implemented")
 }
 
-func (s *accountService) AddAccount(ctx context.Context, addAccountMessage *proto.AddAccountMessage) (*proto.Account, error) {
+func (s accountService) AddAccount(ctx context.Context, addAccountMessage *proto.AddAccountMessage) (*proto.Account, error) {
 	newAccount := addAccountMessage.ToCoreAccount()
 	newAccount, err := s.Storage.AddAccount(newAccount)
 	if err != nil {

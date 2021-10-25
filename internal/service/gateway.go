@@ -3,7 +3,6 @@ package service
 import (
 	"log"
 	"net/http"
-	"strings"
 
 	"github.com/dmartzol/goapi/internal/handler"
 	"github.com/dmartzol/goapi/internal/logger"
@@ -17,7 +16,7 @@ import (
 func NewGatewayServiceRun(c *cli.Context) error {
 	structuredLogging := c.Bool("structuredLogging")
 	verbose := c.Bool("verbose")
-	hostname := c.String("hostname")
+	hostname := c.String("host")
 	port := c.String("port")
 	accountsServiceHost := c.String("accountsServiceHostname")
 	accountsServicePort := c.String("accountsServicePort")
@@ -44,7 +43,7 @@ func NewGatewayServiceRun(c *cli.Context) error {
 
 	// ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	// defer cancel()
-	handler.Infof("listening and serving on %s", hostname)
+	handler.Infof("listening and serving on %s:%s", hostname, port)
 	cors := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:3000"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
@@ -52,6 +51,7 @@ func NewGatewayServiceRun(c *cli.Context) error {
 		// Enable Debugging for testing, consider disabling in production
 		// Debug: true,
 	})
-	address := strings.Join([]string{hostname, port}, ":")
+
+	address := hostname + ":" + port
 	return http.ListenAndServe(address, cors.Handler(handler.Router))
 }

@@ -17,7 +17,7 @@ func TestCreateAccount(t *testing.T) {
 		LastName:  "Martinez",
 		Email:     "dani@example.com",
 	}
-	req, err := sling.New().Base("http://0.0.0.0:1100/v1/").Post("accounts").BodyJSON(body).Request()
+	req, err := sling.New().Base("http://localhost:1100/v1/").Post("accounts").BodyJSON(body).Request()
 	if err != nil {
 		t.Fatalf("error creating request: %+v", err)
 	}

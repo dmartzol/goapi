@@ -21,7 +21,7 @@ services:
 
   gateway:
     container_name: gateway
-    restart: always
+    restart: "no"
     build:
       context: .
       dockerfile: Dockerfile
@@ -41,7 +41,7 @@ services:
 
   accounts:
     container_name: accounts
-    restart: always
+    restart: "no"
     build:
       context: .
       dockerfile: Dockerfile
@@ -54,13 +54,10 @@ services:
     command: ./accounts
     environment:
       VERBOSE: "true"
-      GOAPI_STRUCTURED_LOGGING: "false"
-      GOAPI_DATABASE_NAME: e2e-db
-      GOAPI_DATABASE_HOSTNAME: database
+      PGNAME: e2e-db
       GOAPI_DATABASE_USERNAME: user-development
       GOAPI_DATABASE_PASSWORD: secret
       GOAPI_DATABASE_PORT: 5432
-      PGDATABASE: e2e-db
       PGHOST: database
     depends_on:
       - database
@@ -69,7 +66,7 @@ services:
 
   sessions:
     container_name: sessions
-    restart: always
+    restart: "no"
     build:
       context: .
       dockerfile: Dockerfile
