@@ -49,5 +49,6 @@ func (h *Handler) createAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	h.Debugf("a: %v", a)
-	httputils.RespondJSONError(w, http.StatusText(http.StatusNotImplemented), http.StatusNotImplemented)
+	vOpts := make(map[string]bool)
+	httputils.RespondJSON(w, a.View(vOpts))
 }
