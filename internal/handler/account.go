@@ -40,15 +40,13 @@ func (h *Handler) createAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Debugf("pbAccount: %v", pbAccount)
-
 	a, err := proto.CoreAccount(pbAccount)
 	if err != nil {
 		h.Errorw("failed to marshall account", "error", err)
 		httputils.RespondJSONError(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
-	h.Debugf("a: %v", a)
+
 	vOpts := make(map[string]bool)
 	httputils.RespondJSON(w, a.View(vOpts))
 }
