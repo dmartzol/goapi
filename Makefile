@@ -18,7 +18,7 @@ define log_success
 	@printf "$(color_green)$(1)$(color_off)\n"
 endef
 
-.PHONY: postgresstart postgresstop createdb dropdb migrate_up migrate_down e2e proto test/ci test/all up swagger-validate swagger-serve install_deps lint tidy test
+.PHONY: e2e proto test/ci test/all up swagger-validate swagger-serve install_deps lint tidy test
 
 install_deps:
 	go mod download

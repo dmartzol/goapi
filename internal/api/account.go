@@ -11,7 +11,6 @@ import (
 type Account struct {
 	ID                         uuid.UUID `json:"ID"`
 	FirstName, LastName, Email string
-	DOB                        string
 	Gender                     string
 }
 

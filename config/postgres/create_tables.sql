@@ -12,7 +12,6 @@ CREATE TABLE accounts (
     id uuid PRIMARY KEY NOT NULL,
     first_name VARCHAR NOT NULL,
     last_name VARCHAR NOT NULL,
-    dob date NOT NULL,
     gender CITEXT DEFAULT NULL,
     email CITEXT NOT NULL UNIQUE,
     pass_hash TEXT NOT NULL,

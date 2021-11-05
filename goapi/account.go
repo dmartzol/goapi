@@ -2,10 +2,8 @@ package goapi
 
 import (
 	"strings"
-	"time"
 
 	"github.com/dmartzol/goapi/internal/api"
-	"github.com/dmartzol/goapi/pkg/timeutils"
 	"github.com/pkg/errors"
 )
 
@@ -16,7 +14,6 @@ type Account struct {
 	*Model
 	FirstName string `db:"first_name"`
 	LastName  string `db:"last_name"`
-	DOB       time.Time
 	Gender    *string
 	PassHash  string `db:"pass_hash"`
 	Email     string
@@ -29,7 +26,6 @@ func (a Account) View(options map[string]bool) api.Account {
 		ID:        a.ID,
 		FirstName: a.FirstName,
 		LastName:  a.LastName,
-		DOB:       a.DOB.Format(timeutils.LayoutISODay),
 		Email:     a.Email,
 	}
 	if a.Gender != nil {
@@ -49,7 +45,6 @@ func (accs Accounts) Views(options map[string]bool) []api.Account {
 type RegisterRequest struct {
 	FirstName   string
 	LastName    string
-	DOB         string
 	Gender      *string
 	PhoneNumber *string
 	Email       string
