@@ -5,27 +5,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-type Account struct {
-	*goapi.Account
-}
-
-func (a *Account) Validate() error {
-	if a.FirstName == "" {
-		return errors.Errorf("invalid name")
-	}
-	if a.LastName == "" {
-		return errors.Errorf("invalid last name")
-	}
-	if a.Email == "" {
-		return errors.Errorf("empty email")
-	}
-	return nil
-}
-
-func (a *Account) Build() *goapi.Account {
-	return a.Account
-}
-
 // AccountWithCredentials returns an account if the email and password provided match an (email,password) pair in the db
 func (db *DB) AccountWithCredentials(email, password string) (*goapi.Account, error) {
 	var a goapi.Account
@@ -36,14 +15,7 @@ func (db *DB) AccountWithCredentials(email, password string) (*goapi.Account, er
 
 // AddAccount insert a new account in the database
 func (db *DB) AddAccount(a *goapi.Account) (*goapi.Account, error) {
-	dbAccount := &Account{
-		Account: a,
-	}
-	if err := dbAccount.Validate(); err != nil {
-		return nil, errors.Wrap(err, "validation failed")
-	}
-
-	dbAccount.Model = goapi.NewModel()
+	a.Model = goapi.NewModel()
 
 	sqlInsert := `
 	insert into accounts (
@@ -60,17 +32,17 @@ func (db *DB) AddAccount(a *goapi.Account) (*goapi.Account, error) {
 	`
 	_, err := db.Client.Exec(
 		sqlInsert,
-		dbAccount.Model.ID,
-		dbAccount.FirstName,
-		dbAccount.LastName,
-		dbAccount.Gender,
-		dbAccount.Email,
-		dbAccount.PassHash,
-		dbAccount.CreatedTime,
-		dbAccount.UpdatedTime,
+		a.Model.ID,
+		a.FirstName,
+		a.LastName,
+		a.Gender,
+		a.Email,
+		a.PassHash,
+		a.CreatedTime,
+		a.UpdatedTime,
 	)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to insert account")
 	}
-	return dbAccount.Build(), nil
+	return a, nil
 }
