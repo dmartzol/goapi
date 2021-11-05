@@ -12,7 +12,7 @@ import (
 
 // DB represents the database
 type DB struct {
-	Client *sqlx.DB
+	*sqlx.DB
 }
 
 type Config struct {

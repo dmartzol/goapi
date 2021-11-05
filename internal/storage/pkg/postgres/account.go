@@ -9,7 +9,7 @@ import (
 func (db *DB) AccountWithCredentials(email, password string) (*goapi.Account, error) {
 	var a goapi.Account
 	sqlSelect := `select * from accounts a where a.email = $1 and a.passhash = crypt($2, a.passhash)`
-	err := db.Client.Get(&a, sqlSelect, email, password)
+	err := db.Get(&a, sqlSelect, email, password)
 	return &a, err
 }
 
@@ -30,7 +30,7 @@ func (db *DB) AddAccount(a *goapi.Account) (*goapi.Account, error) {
 		values
 		($1, $2, $3, $4, $5, $6, $7, $8, $9)
 	`
-	_, err := db.Client.Exec(
+	_, err := db.Exec(
 		sqlInsert,
 		a.Model.ID,
 		a.FirstName,

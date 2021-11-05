@@ -14,7 +14,7 @@ import (
 func (db *DB) SessionFromToken(token string) (*goapi.Session, error) {
 	var s goapi.Session
 	sqlStatement := `SELECT * FROM sessions WHERE token = $1`
-	err := db.Client.Get(&s, sqlStatement, token)
+	err := db.Get(&s, sqlStatement, token)
 	return &s, err
 }
 
@@ -28,7 +28,7 @@ func (db *DB) AddSession(session *goapi.Session) (*goapi.Session, error) {
 
 	var s goapi.Session
 	sqlInsert := `INSERT INTO sessions (account_id) VALUES ($1)`
-	err := db.Client.Get(&s, sqlInsert, session.AccountID)
+	err := db.Get(&s, sqlInsert, session.AccountID)
 
 	if err != nil {
 		return nil, err
@@ -41,7 +41,7 @@ func (db *DB) AddSession(session *goapi.Session) (*goapi.Session, error) {
 func (db *DB) CreateSession(accountID uuid.UUID) (*goapi.Session, error) {
 	var s goapi.Session
 	sqlInsert := `INSERT INTO sessions (account_id) VALUES ($1) RETURNING *`
-	err := db.Client.Get(&s, sqlInsert, accountID)
+	err := db.Get(&s, sqlInsert, accountID)
 	return &s, err
 }
 
@@ -49,13 +49,13 @@ func (db *DB) CreateSession(accountID uuid.UUID) (*goapi.Session, error) {
 func (db *DB) ExpireSessionFromToken(token string) (*goapi.Session, error) {
 	var s goapi.Session
 	sqlStatement := `UPDATE sessions SET expiration_time = current_timestamp WHERE token = $1 RETURNING *`
-	err := db.Client.Get(&s, sqlStatement, token)
+	err := db.Get(&s, sqlStatement, token)
 	return &s, err
 }
 
 // UpdateSession updates a session in the db with the current timestamp
 func (db *DB) UpdateSession(token string) (*goapi.Session, error) {
-	tx, err := db.Client.Beginx()
+	tx, err := db.Beginx()
 	if err != nil {
 		return nil, err
 	}
