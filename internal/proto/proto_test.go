@@ -9,9 +9,9 @@ import (
 
 func TestCoreAccount(t *testing.T) {
 	testCases := []struct {
-		description    string
-		pbAccount      Account
-		expectedResult goapi.Account
+		description string
+		pbAccount   Account
+		should      goapi.Account
 	}{
 		{
 			description: "simple test",
@@ -21,7 +21,7 @@ func TestCoreAccount(t *testing.T) {
 				LastName:  "martinez",
 				Email:     "dani@example.com",
 			},
-			expectedResult: goapi.Account{
+			should: goapi.Account{
 				FirstName: "dani",
 				LastName:  "martinez",
 				Email:     "dani@example.com",
@@ -31,12 +31,11 @@ func TestCoreAccount(t *testing.T) {
 
 	for _, tt := range testCases {
 		t.Run(tt.description, func(t *testing.T) {
-			expected := tt.expectedResult
-			actual, err := CoreAccount(&tt.pbAccount)
+			got, err := CoreAccount(&tt.pbAccount)
 			assert.Nil(t, err)
-			assert.Equal(t, actual.FirstName, expected.FirstName)
-			assert.Equal(t, actual.LastName, expected.LastName)
-			assert.Equal(t, actual.Email, expected.Email)
+			assert.Equal(t, got.FirstName, tt.should.FirstName)
+			assert.Equal(t, got.LastName, tt.should.LastName)
+			assert.Equal(t, got.Email, tt.should.Email)
 		})
 	}
 }
