@@ -1,9 +1,10 @@
-package service
+package main
 
 import (
 	"context"
 	"net"
 
+	"github.com/dmartzol/goapi/internal/commands"
 	"github.com/dmartzol/goapi/internal/logger"
 	"github.com/dmartzol/goapi/internal/proto"
 	"github.com/dmartzol/goapi/internal/storage"
@@ -20,19 +21,10 @@ type accountService struct {
 	*zap.SugaredLogger
 }
 
-type AccountsServiceConfig struct {
-	StructuredLogging bool
-	DatabaseHostname  string
-	DatabaseName      string
-	DatabaseUsername  string
-	DatabasePassword  string
-	DatabasePort      int
-}
-
-func NewAccountsService(c *cli.Context) error {
-	structuredLogging := c.Bool("structuredLogging")
+func newAccountsServiceRun(c *cli.Context) error {
+	structuredLogging := c.Bool(commands.StructuredLoggingFlagName)
 	port := c.String("port")
-	databaseHostname := c.String("databaseHostname")
+	databaseHostname := c.String(commands.DatabaseHostnameFlagName)
 	databaseName := c.String("databaseName")
 	databaseUser := c.String("databaseUser")
 	databasePassword := c.String("databasePassword")

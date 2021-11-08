@@ -4,7 +4,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/dmartzol/goapi/internal/service"
 	"github.com/urfave/cli"
 )
 
@@ -37,7 +36,7 @@ func main() {
 				Value:  "50051",
 			},
 		},
-		Action: service.NewGatewayServiceRun,
+		Action: newGatewayServiceRun,
 	}
 
 	err := app.Run(os.Args)
