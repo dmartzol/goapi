@@ -55,7 +55,6 @@ services:
       - 50051:50051
     command: ./accounts
     environment:
-      VERBOSE: "true"
       PGUSER: user-development
       PGNAME: development
     depends_on:
