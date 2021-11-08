@@ -15,16 +15,16 @@ const (
 
 type Handler struct {
 	*zap.SugaredLogger
-	Accounts pb.AccountsClient
-	Router   *mux.Router
-	Verbose  bool
+	Accounts      pb.AccountsClient
+	Router        *mux.Router
+	LogRawRequest bool
 }
 
-func New(ac pb.AccountsClient, logger *zap.SugaredLogger, verbose bool) (*Handler, error) {
+func New(ac pb.AccountsClient, logger *zap.SugaredLogger, logRawRequest bool) (*Handler, error) {
 	h := Handler{
 		Accounts:      ac,
 		SugaredLogger: logger,
-		Verbose:       verbose,
+		LogRawRequest: logRawRequest,
 	}
 
 	return &h, nil

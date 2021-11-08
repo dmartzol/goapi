@@ -3,8 +3,9 @@ package commands
 import "github.com/urfave/cli"
 
 var (
-	StructuredLoggingFlagName = "structuredLogging"
-	DatabaseHostnameFlagName  = "databaseHostname"
+	StructuredLoggingFlagName  = "structuredLogging"
+	RawRequestsLoggingFlagName = "rawRequestsLogging"
+	DatabaseHostnameFlagName   = "databaseHostname"
 
 	CommonFlags = []cli.Flag{
 		&cli.BoolTFlag{

@@ -12,7 +12,7 @@ func (h *Handler) Unmarshal(r *http.Request, iface interface{}) error {
 		h.Errorf("ReadAll: %+v", err)
 		return err
 	}
-	if h.Verbose {
+	if h.LogRawRequest {
 		h.Infof("payload: %s", body)
 	}
 	err = json.Unmarshal(body, &iface)

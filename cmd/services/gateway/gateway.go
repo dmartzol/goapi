@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/dmartzol/goapi/internal/commands"
 	"github.com/dmartzol/goapi/internal/handler"
 	"github.com/dmartzol/goapi/internal/logger"
 	"github.com/dmartzol/goapi/internal/proto"
@@ -14,8 +15,8 @@ import (
 )
 
 func newGatewayServiceRun(c *cli.Context) error {
-	structuredLogging := c.Bool("structuredLogging")
-	verbose := c.Bool("verbose")
+	structuredLogging := c.Bool(commands.StructuredLoggingFlagName)
+	rawRequestLogging := c.Bool(commands.RawRequestsLoggingFlagName)
 	hostname := c.String("host")
 	port := c.String("port")
 	accountsServiceHost := c.String("accountsServiceHostname")
@@ -35,7 +36,7 @@ func newGatewayServiceRun(c *cli.Context) error {
 	defer conn.Close()
 	accountsClient := proto.NewAccountsClient(conn)
 
-	handler, err := handler.New(accountsClient, logger, verbose)
+	handler, err := handler.New(accountsClient, logger, rawRequestLogging)
 	if err != nil {
 		log.Panicf("error creating handler: %v", err)
 	}
