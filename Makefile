@@ -18,12 +18,11 @@ define log_success
 	@printf "$(color_green)$(1)$(color_off)\n"
 endef
 
-.PHONY: e2e proto test/ci test/all up swagger-validate swagger-serve install_deps lint tidy test
+.PHONY: e2e proto up swagger-validate swagger-serve install_deps test
 
 install_deps:
 	go mod download
 	go install github.com/golang/protobuf/protoc-gen-go@v1.4.3
-	brew install golangci-lint
 	brew install golang-migrate
 	# go install github.com/go-swagger/go-swagger/cmd/swagger@v0.26.1
 	# go install github.com/go-swagger/go-swagger/cmd/swagger@v0.26.1
@@ -35,10 +34,6 @@ up:
 
 down:
 	docker compose -p goapi down
-
-lint:
-	golangci-lint run ./...
-	$(call log_success,Linting with golangci-lint succeeded!)
 
 tidy:
 	$(call log_info,Check that go.mod and go.sum don't contain any unnecessary dependency)
@@ -72,20 +67,16 @@ e2e.down:
 	docker compose --file docker-compose.e2e.yaml down
 	$(call log_success,succeeded!)
 
-e2e.migrate.up:
+migrate.up:
 	migrate -path="$(MIGRATIONS_PATH)" -database="$(POSTGRESQL_URL)" -verbose up
 
-e2e.migrate.down:
+migrate.down:
 	migrate -path="$(MIGRATIONS_PATH)" -database="$(POSTGRESQL_URL)" -verbose down
 
 e2e.test:
 	gotest -tags=e2e ./... -v
 
-e2e: proto build e2e.up e2e.migrate.up e2e.test e2e.migrate.down e2e.down
-
-test/ci: test go-mod-tidy
-
-test/all: test go-mod-tidy lint e2e
+e2e: proto build e2e.up migrate.up e2e.test migrate.down e2e.down
 
 swagger-validate:
 	swagger validate ./api/swagger.yml
