@@ -21,7 +21,12 @@ type Config struct {
 }
 
 func new(config Config) (*DB, error) {
-	dataSourceName := "host=%s port=%d user=%s password=%s dbname=%s sslmode=disable"
+	var dataSourceName string
+	if config.Password != "" {
+		dataSourceName = "host=%s port=%d user=%s password=%s dbname=%s sslmode=disable"
+	} else {
+		dataSourceName = "host=%s port=%d user=%s dbname=%s sslmode=disable"
+	}
 	dataSourceName = fmt.Sprintf(dataSourceName, config.Host, config.Port, config.User, config.Password, config.Name)
 	database, err := sqlx.Connect("postgres", dataSourceName)
 	if err != nil {

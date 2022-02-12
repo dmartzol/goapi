@@ -17,7 +17,7 @@ import (
 
 type accountService struct {
 	proto.UnimplementedAccountsServer
-	*storage.Storage
+	*storage.MacroStorage
 	*zap.SugaredLogger
 }
 
@@ -55,7 +55,7 @@ func newAccountsServiceRun(c *cli.Context) error {
 	}
 
 	a := accountService{
-		Storage:       storage.New(dbClient),
+		MacroStorage:  storage.New(dbClient),
 		SugaredLogger: logger,
 	}
 
@@ -79,7 +79,7 @@ func (s *accountService) Account(ctx context.Context, accountID *proto.AccountID
 
 func (s accountService) AddAccount(ctx context.Context, addAccountMessage *proto.AddAccountMessage) (*proto.Account, error) {
 	newAccount := addAccountMessage.ToCoreAccount()
-	newAccount, err := s.Storage.AddAccount(newAccount)
+	newAccount, err := s.MacroStorage.AddAccount(newAccount)
 	if err != nil {
 		s.Errorw("failed to add acount", "error", err)
 		return nil, errors.Wrap(err, "failed to add account")

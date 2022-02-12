@@ -15,10 +15,10 @@ import (
 )
 
 func newGatewayServiceRun(c *cli.Context) error {
+	hostname := c.String(commands.HostnameFlagName)
+	port := c.String(commands.PortFlagName)
 	structuredLogging := c.Bool(commands.StructuredLoggingFlagName)
 	rawRequestLogging := c.Bool(commands.RawRequestsLoggingFlagName)
-	hostname := c.String("host")
-	port := c.String("port")
 	accountsServiceHost := c.String("accountsServiceHostname")
 	accountsServicePort := c.String("accountsServicePort")
 

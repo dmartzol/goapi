@@ -6,6 +6,8 @@ var (
 	StructuredLoggingFlagName  = "structuredLogging"
 	RawRequestsLoggingFlagName = "rawRequestsLogging"
 	DatabaseHostnameFlagName   = "databaseHostname"
+	HostnameFlagName           = "host"
+	PortFlagName               = "port"
 
 	CommonFlags = []cli.Flag{
 		&cli.BoolTFlag{
