@@ -21,7 +21,7 @@ services:
       dockerfile: Dockerfile
       args:
         project: gateway
-        project_path: ./cmd/services
+        project_path: ./cmd
     ports:
       - 1100:1100
     command: ./gateway
@@ -41,7 +41,7 @@ services:
       dockerfile: Dockerfile
       args:
         project: accounts
-        project_path: ./cmd/services
+        project_path: ./cmd
     ports:
       - 1300:1300
       - 50051:50051
@@ -63,7 +63,7 @@ services:
       dockerfile: Dockerfile
       args:
         project: sessions
-        project_path: ./cmd/services
+        project_path: ./cmd
     ports:
       - 1200:1200
     command: ./sessions
