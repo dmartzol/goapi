@@ -6,18 +6,6 @@ POSTGRES_PASSWORD := secret
 POSTGRESQL_URL := postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(DB_NAME)?user=$(POSTGRES_USER)&password=$(POSTGRES_PASSWORD)&sslmode=disable
 MIGRATIONS_PATH := migrations
 
-# Colorful output
-color_off = \033[0m
-color_cyan = \033[1;36m
-color_green = \033[1;32m
-
-define log_info
-	@printf "$(color_cyan)$(1)$(color_off)\n"
-endef
-define log_success
-	@printf "$(color_green)$(1)$(color_off)\n"
-endef
-
 .PHONY: e2e proto up swagger-validate swagger-serve install_deps test
 
 install_deps:
@@ -36,16 +24,12 @@ down:
 	docker compose -p goapi down
 
 tidy:
-	$(call log_info,Check that go.mod and go.sum don't contain any unnecessary dependency)
 	go mod tidy -v
 	git diff-index --quiet HEAD
-	$(call log_success,Go mod check succeeded!)
 
 test:
-	$(call log_info,Run tests and check race conditions)
 	# https://golang.org/doc/articles/race_detector.html
 	go test -race -v ./... -cover
-	$(call log_success,All tests succeeded)
 
 proto:
 	protoc \
@@ -65,7 +49,6 @@ e2e.up:
 
 e2e.down:
 	docker compose --file docker-compose.e2e.yaml down
-	$(call log_success,succeeded!)
 
 migrate.up:
 	migrate -path="$(MIGRATIONS_PATH)" -database="$(POSTGRESQL_URL)" -verbose up
