@@ -15,8 +15,6 @@ install_deps:
 	brew install golang-migrate
 
 up:
-	go mod tidy
-	go mod download
 	docker-compose up --remove-orphans -d --build
 
 down:
@@ -24,7 +22,7 @@ down:
 
 tidy:
 	go mod tidy -v
-	git diff-index --quiet HEAD
+	go mod download
 
 test:
 	# https://golang.org/doc/articles/race_detector.html
