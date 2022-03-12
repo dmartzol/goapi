@@ -15,7 +15,7 @@ install_deps:
 	brew install golang-migrate
 
 up:
-	docker-compose up --remove-orphans -d --build
+	docker-compose up --remove-orphans -d
 
 down:
 	docker compose -p goapi down
