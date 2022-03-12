@@ -7,7 +7,7 @@ POSTGRESQL_URL := postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(DB_NAME)?user
 MIGRATIONS_PATH := migrations
 MIGRATE_VERSION := v4.15.1
 
-.PHONY: e2e proto up install_deps
+.PHONY: install_deps up down tidy proto migrate.up migrate.down 
 
 install_deps:
 	go mod download
@@ -30,16 +30,6 @@ proto:
 		--go-grpc_out=. \
 		--go-grpc_opt=paths=source_relative internal/proto/goapi.proto
 
-e2e.up:
-	docker compose --file docker-compose.e2e.yaml up \
-					--remove-orphans \
-					--build \
-					--detach
-
-e2e.down:
-	docker compose --file docker-compose.e2e.yaml down
-
-
 migrate.up:
 	docker run -v $(shell pwd)/migrations:/migrations \
 				--network host migrate/migrate:$(MIGRATE_VERSION) \
@@ -56,7 +46,4 @@ migrate.down:
 				-verbose \
 				down 1
 
-e2e.test:
-	gotest -tags=e2e ./... -v
-
-e2e: proto build e2e.up migrate.up e2e.test migrate.down e2e.down
+-include e2e.mk
