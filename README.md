@@ -1,7 +1,6 @@
 # Requirements
 
 1. Docker 
-1. `brew install golang-migrate`
 
 # Read Me
 
