@@ -7,12 +7,11 @@ POSTGRESQL_URL := postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(DB_NAME)?user
 MIGRATIONS_PATH := migrations
 MIGRATE_VERSION := v4.15.1
 
-.PHONY: e2e proto up swagger-validate swagger-serve install_deps test
+.PHONY: e2e proto up install_deps
 
 install_deps:
 	go mod download
 	go install github.com/golang/protobuf/protoc-gen-go@v1.4.3
-	brew install golang-migrate
 
 up:
 	docker-compose up --remove-orphans -d
@@ -23,10 +22,6 @@ down:
 tidy:
 	go mod tidy -v
 	go mod download
-
-test:
-	# https://golang.org/doc/articles/race_detector.html
-	go test -race -v ./... -cover
 
 proto:
 	protoc \
