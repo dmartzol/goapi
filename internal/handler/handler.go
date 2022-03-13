@@ -2,8 +2,7 @@ package handler
 
 import (
 	pb "github.com/dmartzol/goapi/internal/proto"
-	"github.com/go-chi/chi/middleware"
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
 
@@ -16,7 +15,7 @@ const (
 type Handler struct {
 	*zap.SugaredLogger
 	Accounts      pb.AccountsClient
-	Router        *mux.Router
+	Router        *gin.Engine
 	LogRawRequest bool
 }
 
@@ -31,23 +30,31 @@ func New(ac pb.AccountsClient, logger *zap.SugaredLogger, logRawRequest bool) (*
 }
 
 func (h *Handler) InitializeRoutes() {
-	r := mux.NewRouter()
-	h.Router = r.PathPrefix("/v1").Subrouter()
+	//router := mux.NewRouter()
+	h.Router = gin.Default()
 
-	h.Router.Use(
-		middleware.Logger,
-		middleware.Recoverer,
-		h.AuthMiddleware,
-	)
+	// Simple group: v1
+	v1 := h.Router.Group("/v1")
 
-	h.Router.HandleFunc("/version", h.Version).Methods("GET")
+	//router.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+
+	//h.Router = router.PathPrefix("/v1").Subrouter()
+
+	//h.Router.Use(
+	//middleware.Logger,
+	//middleware.Recoverer,
+	//h.AuthMiddleware,
+	//)
+
+	{
+		v1.GET("/version", h.ginVersion)
+		v1.POST("/accounts", h.createAccount)
+	}
 
 	// accounts
-	h.Router.HandleFunc("/accounts", h.createAccount).Methods("POST")
-
 	// sessions
 	// see: https://stackoverflow.com/questions/7140074/restfully-design-login-or-register-resources
-	h.Router.HandleFunc("/sessions", h.CreateSession).Methods("POST")
-	h.Router.HandleFunc("/sessions", h.GetSession).Methods("GET")
-	h.Router.HandleFunc("/sessions", h.ExpireSession).Methods("DELETE")
+	//h.Router.HandleFunc("/sessions", h.CreateSession).Methods("POST")
+	//h.Router.HandleFunc("/sessions", h.GetSession).Methods("GET")
+	//h.Router.HandleFunc("/sessions", h.ExpireSession).Methods("DELETE")
 }

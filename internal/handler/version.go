@@ -1,13 +1,12 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 
-	"github.com/dmartzol/goapi/pkg/httputils"
+	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) Version(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ginVersion(c *gin.Context) {
 	h.Infow("serving service version", "version", apiVersionNumber)
-	httputils.RespondJSON(w, fmt.Sprintf("version %s", apiVersionNumber))
+	c.JSON(http.StatusOK, gin.H{"version": apiVersionNumber})
 }

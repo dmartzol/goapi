@@ -7,20 +7,20 @@ import (
 
 	"github.com/dmartzol/goapi/internal/api"
 	"github.com/dmartzol/goapi/internal/proto"
-	"github.com/dmartzol/goapi/pkg/httputils"
+	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) createAccount(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) createAccount(c *gin.Context) {
 	var req api.CreateAccountRequest
-	err := h.Unmarshal(r, &req)
+	err := c.BindJSON(&req)
 	if err != nil {
 		h.Errorw("could not unmarshal", "error", err)
-		httputils.RespondJSONError(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	if err := req.Validate(); err != nil {
 		h.Errorw("failed to validate create account request", "error", err)
-		httputils.RespondJSONError(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -36,17 +36,17 @@ func (h *Handler) createAccount(w http.ResponseWriter, r *http.Request) {
 	pbAccount, err := h.Accounts.AddAccount(ctx, &addAccountMessage)
 	if err != nil {
 		h.Errorw("failed to create account", "error", err)
-		httputils.RespondJSONError(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	a, err := proto.CoreAccount(pbAccount)
 	if err != nil {
 		h.Errorw("failed to marshall account", "error", err)
-		httputils.RespondJSONError(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	vOpts := make(map[string]bool)
-	httputils.RespondJSON(w, a.View(vOpts))
+	c.JSON(http.StatusOK, a.View(vOpts))
 }
