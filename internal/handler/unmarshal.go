@@ -2,20 +2,20 @@ package handler
 
 import (
 	"encoding/json"
-	"io/ioutil"
-	"net/http"
+	"fmt"
+
+	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) Unmarshal(r *http.Request, iface interface{}) error {
-	body, err := ioutil.ReadAll(r.Body)
+func (h *Handler) Unmarshal(c *gin.Context, iface interface{}) error {
+	b, err := c.GetRawData()
 	if err != nil {
-		h.Errorf("ReadAll: %+v", err)
-		return err
+		return fmt.Errorf("unable to get raw data: %w", err)
 	}
 	if h.LogRawRequest {
-		h.Infof("payload: %s", body)
+		h.Infof("payload: %s", b)
 	}
-	err = json.Unmarshal(body, &iface)
+	err = json.Unmarshal(b, &iface)
 	if err != nil {
 		h.Errorf("json.Unmarshal %+v", err)
 		return err

@@ -5,6 +5,7 @@ import (
 
 	"github.com/dmartzol/goapi/goapi"
 	"github.com/dmartzol/goapi/pkg/httputils"
+	"github.com/gin-gonic/gin"
 )
 
 const (
@@ -28,12 +29,12 @@ func (h *Handler) GetSession(w http.ResponseWriter, r *http.Request) {
 	// httputils.RespondJSON(w, s.View(nil))
 }
 
-func (h *Handler) CreateSession(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) createSession(c *gin.Context) {
 	var credentials goapi.LoginCredentials
-	err := h.Unmarshal(r, &credentials)
+	err := h.Unmarshal(c, &credentials)
 	if err != nil {
 		h.Errorw("could not unmarshal", "error", err)
-		httputils.RespondJSONError(w, "", http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -41,25 +42,34 @@ func (h *Handler) CreateSession(w http.ResponseWriter, r *http.Request) {
 	// a, err := h.db.AccountWithCredentials(credentials.Email, credentials.Password)
 	if err != nil {
 		h.Errorw("could not fetch account", "email", credentials.Email)
-		httputils.RespondJSONError(w, "", http.StatusUnauthorized)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 	credentials.Password = ""
 
 	// create session and cookie
-	// s, err := h.db.CreateSession(a.ID)
-	// if err != nil {
-	// 	h.Errorw("could not create session", "account", a.ID)
-	// 	httputils.RespondJSONError(w, "", http.StatusInternalServerError)
-	// 	return
-	// }
+	//s, err := h.db.CreateSession(a.ID)
+	//if err != nil {
+	//h.Errorw("could not create session", "account", a.ID)
+	//httputils.RespondJSONError(w, "", http.StatusInternalServerError)
+	//return
+	//}
 	cookie := &http.Cookie{
 		Name: CookieName,
 		// Value:  s.Token,
 		MaxAge: sessionLength,
 	}
-	http.SetCookie(w, cookie)
-	// httputils.RespondJSON(w, s.View(nil))
+	c.SetCookie(
+		CookieName,
+		"",
+		//s.Token,
+		cookie.MaxAge,
+		cookie.Path,
+		cookie.Domain,
+		cookie.Secure,
+		cookie.HttpOnly,
+	)
+	//c.JSON(http.StatusOK, s.View(nil))
 }
 
 func (h *Handler) ExpireSession(w http.ResponseWriter, r *http.Request) {

@@ -12,7 +12,7 @@ import (
 
 func (h *Handler) createAccount(c *gin.Context) {
 	var req api.CreateAccountRequest
-	err := c.BindJSON(&req)
+	err := h.Unmarshal(c, &req)
 	if err != nil {
 		h.Errorw("could not unmarshal", "error", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

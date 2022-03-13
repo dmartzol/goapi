@@ -49,12 +49,11 @@ func (h *Handler) InitializeRoutes() {
 	{
 		v1.GET("/version", h.ginVersion)
 		v1.POST("/accounts", h.createAccount)
+		v1.POST("/sessions", h.createSession)
 	}
 
-	// accounts
 	// sessions
 	// see: https://stackoverflow.com/questions/7140074/restfully-design-login-or-register-resources
-	//h.Router.HandleFunc("/sessions", h.CreateSession).Methods("POST")
 	//h.Router.HandleFunc("/sessions", h.GetSession).Methods("GET")
 	//h.Router.HandleFunc("/sessions", h.ExpireSession).Methods("DELETE")
 }
