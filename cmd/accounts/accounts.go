@@ -31,7 +31,7 @@ func newAccountsServiceRun(c *cli.Context) error {
 	databasePort := c.Int("databasePort")
 	hostname := c.String("host")
 
-	logger, err := logger.New(structuredLogging)
+	logger, err := logger.New(structuredLogging, "accounts_logger")
 	if err != nil {
 		return errors.Wrap(err, "failed to create logger")
 	}

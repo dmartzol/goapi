@@ -22,7 +22,7 @@ func newGatewayServiceRun(c *cli.Context) error {
 	accountsServiceHost := c.String("accountsServiceHostname")
 	accountsServicePort := c.String("accountsServicePort")
 
-	logger, err := logger.New(structuredLogging)
+	logger, err := logger.New(structuredLogging, "gateway_logger")
 	if err != nil {
 		return errors.Wrap(err, "failed to create logger")
 	}
@@ -41,6 +41,19 @@ func newGatewayServiceRun(c *cli.Context) error {
 		log.Panicf("error creating handler: %v", err)
 	}
 	handler.InitializeRoutes()
+
+	// Port details: https://www.jaegertracing.io/docs/getting-started/
+	//je, err := jaeger.NewExporter(jaeger.Options{
+	//AgentEndpoint:     "localhost:6831",
+	//CollectorEndpoint: "http://localhost:14268/api/traces",
+	//ServiceName:       "my_service",
+	//})
+	//if err != nil {
+	//log.Fatalf("Failed to create the Jaeger exporter: %v", err)
+	//}
+
+	// And now finally register it as a Trace Exporter
+	//trace.RegisterExporter(je)
 
 	// ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	// defer cancel()

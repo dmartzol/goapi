@@ -1,11 +1,15 @@
 package logger
 
 import (
+	"context"
+
+	"github.com/blendle/zapdriver"
 	"github.com/pkg/errors"
+	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 )
 
-func New(structuredLogging bool) (*zap.SugaredLogger, error) {
+func New(structuredLogging bool, projectName string) (*zap.SugaredLogger, error) {
 	var logger *zap.Logger
 	var err error
 	if structuredLogging {
@@ -20,5 +24,10 @@ func New(structuredLogging bool) (*zap.SugaredLogger, error) {
 		}
 	}
 	defer logger.Sync()
+
+	ctx := context.Background()
+	sc := trace.SpanContextFromContext(ctx)
+	fields := zapdriver.TraceContext(sc.TraceID().String(), sc.SpanID().String(), sc.IsSampled(), projectName)
+	logger = logger.With(fields...)
 	return logger.Sugar(), nil
 }
