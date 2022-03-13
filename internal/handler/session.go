@@ -13,17 +13,17 @@ const (
 	sessionLength = 345600
 )
 
-func (h *Handler) GetSession(w http.ResponseWriter, r *http.Request) {
-	c, err := r.Cookie(CookieName)
+func (h *Handler) getSession(c *gin.Context) {
+	_, err := c.Cookie(CookieName)
 	if err != nil {
 		h.Errorw("could not fetch cookie", "cookie", CookieName, "error", err)
-		httputils.RespondJSONError(w, "", http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	// s, err := h.db.SessionFromToken(c.Value)
 	if err != nil {
 		h.Errorw("could not fetch session from token", "token", c.Value, "error", err)
-		httputils.RespondJSONError(w, "", http.StatusUnauthorized)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 	// httputils.RespondJSON(w, s.View(nil))
