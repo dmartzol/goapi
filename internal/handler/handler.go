@@ -30,14 +30,7 @@ func New(ac pb.AccountsClient, logger *zap.SugaredLogger, logRawRequest bool) (*
 }
 
 func (h *Handler) InitializeRoutes() {
-	//router := mux.NewRouter()
 	h.Router = gin.Default()
-
-	// Simple group: v1
-
-	//router.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
-
-	//h.Router = router.PathPrefix("/v1").Subrouter()
 
 	//h.Router.Use(
 	//middleware.Logger,
