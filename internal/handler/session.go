@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/dmartzol/goapi/goapi"
-	"github.com/dmartzol/goapi/pkg/httputils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -72,24 +71,20 @@ func (h *Handler) createSession(c *gin.Context) {
 	//c.JSON(http.StatusOK, s.View(nil))
 }
 
-func (h *Handler) ExpireSession(w http.ResponseWriter, r *http.Request) {
-	c, err := r.Cookie(CookieName)
+func (h *Handler) expireSession(c *gin.Context) {
+	_, err := c.Cookie(CookieName)
 	if err != nil {
 		h.Errorw("could not fetch cookie", "cookie", CookieName, "error", err)
-		httputils.RespondJSONError(w, "", http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	// session, err := h.db.ExpireSessionFromToken(c.Value)
+	//session, err := h.Sessions.ExpireSessionFromToken(c.Value)
 	if err != nil {
 		h.Errorw("could not expire session", "token", c.Value, "error", err)
-		httputils.RespondJSONError(w, "", http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c = &http.Cookie{
-		Name:   CookieName,
-		Value:  "",
-		MaxAge: -1,
-	}
-	http.SetCookie(w, c)
+	c.SetCookie(CookieName, "", -1, "", "", true, true)
 	// httputils.RespondJSON(w, session.View(nil))
+	//c.JSON(http.StatusOK, session.View(nil))
 }

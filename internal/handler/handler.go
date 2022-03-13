@@ -34,7 +34,6 @@ func (h *Handler) InitializeRoutes() {
 	h.Router = gin.Default()
 
 	// Simple group: v1
-	v1 := h.Router.Group("/v1")
 
 	//router.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 
@@ -46,14 +45,14 @@ func (h *Handler) InitializeRoutes() {
 	//h.AuthMiddleware,
 	//)
 
+	v1 := h.Router.Group("/v1")
 	{
 		v1.GET("/version", h.ginVersion)
 		v1.POST("/accounts", h.createAccount)
+		// sessions
 		v1.POST("/sessions", h.createSession)
 		v1.GET("/sessions", h.getSession)
+		// see: https://stackoverflow.com/questions/7140074/restfully-design-login-or-register-resources
+		v1.DELETE("/sessions", h.expireSession)
 	}
-
-	// sessions
-	// see: https://stackoverflow.com/questions/7140074/restfully-design-login-or-register-resources
-	//h.Router.HandleFunc("/sessions", h.ExpireSession).Methods("DELETE")
 }
