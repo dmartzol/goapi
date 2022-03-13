@@ -4,7 +4,7 @@
 
 # Read Me
 
-![PlantUML model](http://www.plantuml.com/plantuml/png/5Smn3e8X34VntLFe0QIxqtUL2WsGK23jlp7nzEBqflUx76m87RT7dtb4aR1nRy3s5v7n9zME5kzmiRmcP2BbfLJqRDyrg2xUdPGTOdISP-bSZJNjFth9BAS_)
+![PlantUML model](http://www.plantuml.com/plantuml/png/3On13WCX203l-uhs0PLxJ_iLgaP910n2clJrvJIPmynz7Cs3r_KagIjQ3rkFwRxF6y3mMmRvZ4-SRbN5ktYfoj0uivyk68gRW944yl9gXCEGoqwvxYuj-GS0)
 
 ### Jaeger UI:
 
