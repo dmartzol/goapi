@@ -4,7 +4,7 @@
 
 # Read Me
 
-![Diagram](http://www.plantuml.com/plantuml/proxy?src=https://github.com/dmartzol/goapi/blob/main/uml-diagram.puml)
+![PlantUML model](http://www.plantuml.com/plantuml/png/5Smn3e8X34VntLFe0QIxqtUL2WsGK23jlp7nzEBqflUx76m87RT7dtb4aR1nRy3s5v7n9zME5kzmiRmcP2BbfLJqRDyrg2xUdPGTOdISP-bSZJNjFth9BAS_)
 
 ### Jaeger UI:
 
