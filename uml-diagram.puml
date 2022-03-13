@@ -1,6 +1,6 @@
 @startuml myDiagram
 !define LIGHTBLUE
-!includeurl https://raw.githubusercontent.com/Drakemor/RedDress-PlantUML/master/style.puml
+!includeurl https://raw.githubusercontent.com/dmartzol/goapi/master/uml-diagram.puml
 
 set namespaceSeparator .
 
