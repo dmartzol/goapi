@@ -3,16 +3,13 @@ module github.com/dmartzol/goapi
 go 1.15
 
 require (
-	contrib.go.opencensus.io/exporter/jaeger v0.2.1 // indirect
-	github.com/blendle/zapdriver v1.3.1 // indirect
+	github.com/blendle/zapdriver v1.3.1
 	github.com/dghubble/sling v1.3.0
-	github.com/gin-gonic/gin v1.7.7 // indirect
-	github.com/go-chi/chi v1.5.4
+	github.com/gin-gonic/gin v1.7.7
 	github.com/go-playground/validator/v10 v10.10.1 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/uuid v1.2.0
-	github.com/gorilla/mux v1.8.0
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/lib/pq v1.10.2
@@ -24,8 +21,7 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/ugorji/go v1.2.7 // indirect
 	github.com/urfave/cli v1.22.5
-	go.opencensus.io v0.23.0 // indirect
-	go.opentelemetry.io/otel/trace v1.4.1 // indirect
+	go.opentelemetry.io/otel/trace v1.4.1
 	go.uber.org/atomic v1.8.0 // indirect
 	go.uber.org/multierr v1.7.0 // indirect
 	go.uber.org/zap v1.18.1
