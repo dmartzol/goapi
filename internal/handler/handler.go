@@ -21,6 +21,7 @@ type Handler struct {
 
 func New(ac pb.AccountsClient, logger *zap.SugaredLogger, logRawRequest bool) (*Handler, error) {
 	h := Handler{
+		Router:        gin.Default(),
 		Accounts:      ac,
 		SugaredLogger: logger,
 		LogRawRequest: logRawRequest,
@@ -30,7 +31,6 @@ func New(ac pb.AccountsClient, logger *zap.SugaredLogger, logRawRequest bool) (*
 }
 
 func (h *Handler) InitializeRoutes() {
-	h.Router = gin.Default()
 
 	//h.Router.Use(
 	//middleware.Logger,
