@@ -2,14 +2,12 @@ package main
 
 import (
 	"log"
-	"net/http"
 
 	"github.com/dmartzol/goapi/internal/commands"
 	"github.com/dmartzol/goapi/internal/handler"
 	"github.com/dmartzol/goapi/internal/logger"
 	"github.com/dmartzol/goapi/internal/proto"
 	"github.com/pkg/errors"
-	"github.com/rs/cors"
 	"github.com/urfave/cli"
 	"google.golang.org/grpc"
 )
@@ -57,15 +55,15 @@ func newGatewayServiceRun(c *cli.Context) error {
 
 	// ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	// defer cancel()
-	handler.Infof("listening and serving on %s:%s", hostname, port)
-	cors := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000"},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
-		AllowCredentials: true,
-		// Enable Debugging for testing, consider disabling in production
-		// Debug: true,
-	})
+	//cors := cors.New(cors.Options{
+	//AllowedOrigins:   []string{"http://localhost:3000"},
+	//AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
+	//AllowCredentials: true,
+	//// Enable Debugging for testing, consider disabling in production
+	//// Debug: true,
+	//})
 
+	handler.Infof("listening and serving on %s:%s", hostname, port)
 	address := hostname + ":" + port
-	return http.ListenAndServe(address, cors.Handler(handler.Router))
+	return handler.Router.Run(address)
 }
