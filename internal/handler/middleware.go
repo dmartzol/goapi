@@ -48,5 +48,4 @@ func (h *Handler) AuthMiddleware(c *gin.Context) {
 
 	// Setting up context
 	//c.Set(contextRequesterAccountIDKey, s.AccountID)
-	// ctx = context.WithValue(ctx, contextRequesterAccountIDKey, s.AccountID)
 }
