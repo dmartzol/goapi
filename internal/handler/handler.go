@@ -39,9 +39,9 @@ func New(ac pb.AccountsClient, logger *zap.SugaredLogger, logRawRequest bool) (*
 
 func (h *Handler) InitializeRoutes() {
 	h.Router.Use(
-		LogHandler(h.SugaredLogger),
+		logHandler(h.SugaredLogger),
 		gin.Recovery(),
-		//h.AuthMiddleware,
+		h.AuthMiddleware,
 	)
 
 	//log.Infow("Test Log", zap.String("trace", "projects/gcp-project-id/traces/"+span.SpanContext().TraceID.String()))
@@ -64,7 +64,7 @@ func (h *Handler) WrappedLogger(ctx context.Context) *zap.SugaredLogger {
 	return logger.Sugar()
 }
 
-func LogHandler(logger *zap.SugaredLogger) gin.HandlerFunc {
+func logHandler(logger *zap.SugaredLogger) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//fields := zapdriver.Operation(
 		//strconv.Itoa(int(time.Now().UnixNano())),

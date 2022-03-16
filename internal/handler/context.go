@@ -1,7 +1,5 @@
 package handler
 
 const (
-	contextRequesterAccountIDKey contexttIDType = iota
+	contextRequesterAccountIDKey string = "accountID"
 )
-
-type contexttIDType int64
