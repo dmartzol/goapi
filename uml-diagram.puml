@@ -3,36 +3,21 @@
 
 set namespaceSeparator .
 
-class gatewayService << (S,Aquamarine) >> {
-}
-
-' Microservices
-class accountsService << (S,Aquamarine) >> {
+class AccountsService << (S,Aquamarine) >> {
     storage StorageInterface
 }
-class sessionsService << (S,Aquamarine) >> {
+class SessionsService << (S,Aquamarine) >> {
     storage StorageInterface
 }
 
 class handler.Handler {
-    AuthMiddleware()
-    InitializeRoutes()
-    Run()
-    --
-    createAccount()
 }
 
-interface databaseInterface {
-}
-
-class Storage {
+class MacroStorage {
     database databaseInterface
 }
 
-class zap.SugaredLogger {
-}
-
-class mux.Router {
+class gin.Router {
 }
 
 class proto.AccountsClient {
@@ -40,26 +25,17 @@ class proto.AccountsClient {
 class proto.SessionsClient {
 }
 
-' Storage
-class DB {
-}
-class sqlx.DB {
-}
+AccountsService <|-- MacroStorage 
+SessionsService <|-- MacroStorage 
 
-accountsService <|-- zap.SugaredLogger
-sessionsService <|-- zap.SugaredLogger
+gateway <|-- handler.Handler
 
-
-gatewayService <|-- handler.Handler
-
-handler.Handler <|-- zap.SugaredLogger
 handler.Handler <|-- proto.AccountsClient
 handler.Handler <|-- proto.SessionsClient
-handler.Handler <|-- mux.Router
-handler.Handler <|-- Storage
+handler.Handler <|-- gin.Router
 
-Storage <|-- databaseInterface
-databaseInterface *-- DB
-DB <|-- sqlx.DB
+MacroStorage <|-- database
+
+database <|-- StorageInterface
 
 @enduml
