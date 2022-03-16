@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/dmartzol/goapi/internal/commands"
 	"github.com/urfave/cli"
 )
 
@@ -12,8 +13,8 @@ func main() {
 		Name: "gateway",
 		Flags: []cli.Flag{
 			&cli.BoolTFlag{
-				Name:   "structuredLogin",
-				EnvVar: "STRUCTURED_LOGIN",
+				Name:   commands.StructuredLoggingFlagName,
+				EnvVar: "STRUCTURED_LOGGING",
 			},
 			&cli.StringFlag{
 				Name:   "host",
