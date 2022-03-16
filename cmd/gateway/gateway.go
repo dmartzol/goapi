@@ -1,13 +1,18 @@
 package main
 
 import (
-	"log"
+	"fmt"
 
 	"github.com/dmartzol/goapi/internal/commands"
 	"github.com/dmartzol/goapi/internal/handler"
 	"github.com/dmartzol/goapi/internal/logger"
 	"github.com/dmartzol/goapi/internal/proto"
+	"github.com/gin-gonic/gin"
+	"github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
+	"github.com/uber/jaeger-client-go"
+	jaegercfg "github.com/uber/jaeger-client-go/config"
+	"github.com/uber/jaeger-lib/metrics"
 	"github.com/urfave/cli"
 	"google.golang.org/grpc"
 )
@@ -34,11 +39,43 @@ func newGatewayServiceRun(c *cli.Context) error {
 	defer conn.Close()
 	accountsClient := proto.NewAccountsClient(conn)
 
-	handler, err := handler.New(accountsClient, logger, rawRequestLogging)
+	myHandler, err := handler.New(accountsClient, logger, rawRequestLogging)
 	if err != nil {
-		log.Panicf("error creating handler: %v", err)
+		logger.Panicf("error creating handler: %v", err)
 	}
-	handler.InitializeRoutes()
+
+	jaegerConfig := jaegercfg.Configuration{
+		ServiceName: "gateway",
+		Sampler: &jaegercfg.SamplerConfig{
+			Type:  jaeger.SamplerTypeConst,
+			Param: 1,
+		},
+		Reporter: &jaegercfg.ReporterConfig{
+			LogSpans:           true,
+			LocalAgentHostPort: "localhost:6831",
+		},
+	}
+
+	tracer, closer, err := jaegerConfig.NewTracer(
+		//jaegercfg.Logger(logger),
+		jaegercfg.Metrics(metrics.NullFactory),
+	)
+	if err != nil {
+		return fmt.Errorf("unable to create tracer: %w", err)
+	}
+
+	opentracing.SetGlobalTracer(tracer)
+	defer closer.Close()
+
+	logger.Info("Opentracing connected")
+	myHandler.InitializeRoutes()
+
+	myHandler.Router.Use(
+		handler.LogHandler(myHandler.SugaredLogger),
+		gin.Recovery(),
+		myHandler.AuthMiddleware,
+		handler.OpenTracing(tracer),
+	)
 
 	// Port details: https://www.jaegertracing.io/docs/getting-started/
 	//je, err := jaeger.NewExporter(jaeger.Options{
@@ -49,8 +86,7 @@ func newGatewayServiceRun(c *cli.Context) error {
 	//if err != nil {
 	//log.Fatalf("Failed to create the Jaeger exporter: %v", err)
 	//}
-
-	// And now finally register it as a Trace Exporter
+	//// And now finally register it as a Trace Exporter
 	//trace.RegisterExporter(je)
 
 	// ctx, cancel := context.WithTimeout(context.Background(), time.Second)
@@ -63,7 +99,7 @@ func newGatewayServiceRun(c *cli.Context) error {
 	//// Debug: true,
 	//})
 
-	handler.Infof("listening and serving on %s:%s", hostname, port)
+	myHandler.Infof("listening and serving on %s:%s", hostname, port)
 	address := hostname + ":" + port
-	return handler.Router.Run(address)
+	return myHandler.Router.Run(address)
 }
