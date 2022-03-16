@@ -28,6 +28,7 @@ services:
     command: ./gateway
     environment:
       STRUCTURED_LOGGING: "false"
+      GIN_MODE: "release"
     depends_on:
       - database
       - accounts
