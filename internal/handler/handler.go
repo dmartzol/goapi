@@ -62,6 +62,18 @@ func (h *Handler) WrappedLogger(ctx context.Context) *zap.SugaredLogger {
 	return logger.Sugar()
 }
 
+func CustomTracing(tc opentracing.Tracer) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		span := tc.StartSpan("main_span")
+		defer span.Finish()
+		err := tc.Inject(span.Context(), opentracing.HTTPHeaders, opentracing.HTTPHeadersCarrier(c.Request.Header))
+		if err != nil {
+			fmt.Printf("unable to inject span: %v", err)
+		}
+		c.Next()
+	}
+}
+
 func OpenTracing(tc opentracing.Tracer) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		wireCtx, _ := opentracing.GlobalTracer().Extract(

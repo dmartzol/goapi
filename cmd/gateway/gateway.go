@@ -8,7 +8,6 @@ import (
 	"github.com/dmartzol/goapi/internal/logger"
 	"github.com/dmartzol/goapi/internal/proto"
 	"github.com/gin-gonic/gin"
-	"github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
 	"github.com/uber/jaeger-client-go"
 	jaegercfg "github.com/uber/jaeger-client-go/config"
@@ -63,18 +62,15 @@ func newGatewayServiceRun(c *cli.Context) error {
 	if err != nil {
 		return fmt.Errorf("unable to create tracer: %w", err)
 	}
-
-	opentracing.SetGlobalTracer(tracer)
 	defer closer.Close()
 
-	logger.Info("Opentracing connected")
 	myHandler.InitializeRoutes()
 
 	myHandler.Router.Use(
 		handler.LogHandler(myHandler.SugaredLogger),
 		gin.Recovery(),
 		myHandler.AuthMiddleware,
-		handler.OpenTracing(tracer),
+		handler.CustomTracing(tracer),
 	)
 
 	// Port details: https://www.jaegertracing.io/docs/getting-started/
