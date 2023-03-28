@@ -19,10 +19,6 @@ up:
 down:
 	docker compose -p goapi down
 
-tidy:
-	go mod tidy -v
-	go mod download
-
 proto:
 	protoc \
 		--go_out=. \
