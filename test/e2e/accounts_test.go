@@ -1,4 +1,5 @@
-//+build e2e
+//go:build e2e
+// +build e2e
 
 // Package httptest_test provides functional tests
 package httptest_test
@@ -8,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/dghubble/sling"
-	"github.com/dmartzol/goapi/internal/api"
+	"github.com/dmartzol/goapi/cmd/accounts/api"
 )
 
 func TestCreateAccount(t *testing.T) {

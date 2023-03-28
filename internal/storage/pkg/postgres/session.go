@@ -1,10 +1,10 @@
 package postgres
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/dmartzol/goapi/goapi"
-	"github.com/dmartzol/goapi/internal/handler"
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 	"github.com/pkg/errors"
@@ -67,7 +67,7 @@ func (db *DB) UpdateSession(token string) (*goapi.Session, error) {
 		return nil, errors.Wrapf(err, "error fetching session from token %s", token)
 	}
 	if session.ExpirationTime.Before(time.Now()) {
-		return nil, handler.ErrExpiredSession
+		return nil, fmt.Errorf("session expired")
 	}
 	var updatedSession goapi.Session
 	sqlStatement = `UPDATE sessions SET last_activity_time=default WHERE token = $1 RETURNING *`
