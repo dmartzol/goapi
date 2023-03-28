@@ -2,15 +2,14 @@ package api
 
 import (
 	"context"
-	"strconv"
-	"time"
+	"encoding/json"
+	"fmt"
 
 	"github.com/blendle/zapdriver"
 	pb "github.com/dmartzol/goapi/internal/proto"
 	"github.com/gin-gonic/gin"
 	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 )
 
 const (
@@ -39,7 +38,6 @@ func New(ac pb.AccountsClient, logger *zap.SugaredLogger, logRawRequest bool) (*
 
 func (h *Handler) InitializeRoutes() {
 	h.Router.Use(
-		logHandler(h.SugaredLogger),
 		gin.Recovery(),
 		h.AuthMiddleware,
 	)
@@ -64,47 +62,18 @@ func (h *Handler) WrappedLogger(ctx context.Context) *zap.SugaredLogger {
 	return logger.Sugar()
 }
 
-func logHandler(logger *zap.SugaredLogger) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		//fields := zapdriver.Operation(
-		//strconv.Itoa(int(time.Now().UnixNano())),
-		//"gateway",
-		//true,
-		//false,
-		//)
-		//logger = logger.Desugar().With(fields).Sugar()
-
-		start := time.Now()
-		path := c.Request.URL.Path
-		query := c.Request.URL.RawQuery
-		c.Next()
-
-		//if _, ok := skipPaths[path]; !ok {
-		end := time.Now()
-		end = end.UTC() // always use UTC
-		latency := end.Sub(start)
-
-		if len(c.Errors) > 0 {
-			// Append error field if this is an erroneous request.
-			for _, e := range c.Errors.Errors() {
-				logger.Error(e)
-			}
-		} else {
-			fields := []zapcore.Field{
-				zap.Int("status", c.Writer.Status()),
-				zap.String("method", c.Request.Method),
-				zap.String("path", path),
-				zap.String("query", query),
-				zap.String("ip", c.ClientIP()),
-				zap.String("user-agent", c.Request.UserAgent()),
-				zap.Duration("latency", latency),
-			}
-			//fields = append(fields, zap.String("time", end.Format(time.RFC3339)))
-			logger.Desugar().With(fields...).Info(strconv.Itoa(c.Writer.Status()))
-			//logger = logger.With(fields)
-			//logger.Infow(path, "key", "value")
-			//}
-		}
-
+func (h *Handler) Unmarshal(c *gin.Context, iface interface{}) error {
+	b, err := c.GetRawData()
+	if err != nil {
+		return fmt.Errorf("unable to get raw data: %w", err)
 	}
+	if h.LogRawRequest {
+		h.Infof("payload: %s", b)
+	}
+	err = json.Unmarshal(b, &iface)
+	if err != nil {
+		h.Errorf("json.Unmarshal %+v", err)
+		return err
+	}
+	return nil
 }
